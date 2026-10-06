@@ -10,58 +10,118 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { CATEGORIES, DEPARTMENTS, type Level, type Suggestion } from "@/data/mock";
-import { classifyTheme, findSimilar, isToolWearQuery, privacyScan } from "@/lib/semantic";
+import { CATEGORIES, DEPARTMENTS, type Level, type Suggestion, type Theme } from "@/data/mock";
+import { classifyTheme, findSimilar, privacyScan } from "@/lib/semantic";
+import { analyzeSemantic, semanticApiConfigured, type LiveRelatedResult } from "@/lib/semantic-api";
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
 
 export const Route = createFileRoute("/submit")({
-  head: () => meta("Submit Idea", "Submit an improvement idea and see a simulated semantic AI analysis."),
+  head: () => meta("Submit Idea", "Submit an improvement idea and run privacy-aware semantic analysis."),
   component: Submit,
 });
 
 const STEPS = ["Privacy screening", "Prompt safety screening", "Semantic analysis", "Similarity search", "Theme assignment", "Priority calculation"];
 
+type AnalysisResult = {
+  theme: Theme;
+  confidence: number;
+  related: LiveRelatedResult[];
+  priv: ReturnType<typeof privacyScan>;
+  priority: number;
+  engine: "live" | "fallback";
+  model?: string;
+};
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function Submit() {
   const { suggestions, add } = useStore();
   const [f, setF] = useState({ title: "", description: "", department: "Production", category: "Improvement Idea", impact: "Medium" as Level, urgency: "Medium" as Level, anonymous: true, ack: false });
   const [step, setStep] = useState(-1);
-  const [result, setResult] = useState<null | ReturnType<typeof analyze>>(null);
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [semanticWarning, setSemanticWarning] = useState<string | null>(null);
 
-  function analyze() {
-    const text = `${f.title} ${f.description}`;
-    const { theme, confidence } = classifyTheme(text);
-    const related = findSimilar(text, suggestions, 3);
+  async function analyze(): Promise<AnalysisResult> {
+    const text = `${f.title}. ${f.description}`.trim();
     const priv = privacyScan(text);
-    const pts = (f.impact === "High" ? 40 : f.impact === "Medium" ? 25 : 10) + (f.urgency === "High" ? 25 : f.urgency === "Medium" ? 15 : 5) + Math.round(theme.frequency_score * 0.3);
-    return { theme, confidence, related, priv, priority: isToolWearQuery(text) ? 86 : Math.min(98, pts) };
+    let theme: Theme;
+    let confidence: number;
+    let related: LiveRelatedResult[];
+    let engine: "live" | "fallback" = "fallback";
+    let model: string | undefined;
+
+    if (semanticApiConfigured()) {
+      try {
+        const live = await analyzeSemantic(priv.sanitized, suggestions, 3);
+        theme = live.theme;
+        confidence = live.confidence;
+        related = live.related;
+        engine = "live";
+        model = live.model;
+        setSemanticWarning(null);
+      } catch (error) {
+        console.warn("Live semantic API unavailable; using deterministic fallback", error);
+        const local = classifyTheme(priv.sanitized);
+        theme = local.theme;
+        confidence = local.confidence;
+        related = findSimilar(priv.sanitized, suggestions, 3);
+        setSemanticWarning("Live semantic service was unavailable, so this result used the local demo fallback.");
+      }
+    } else {
+      const local = classifyTheme(priv.sanitized);
+      theme = local.theme;
+      confidence = local.confidence;
+      related = findSimilar(priv.sanitized, suggestions, 3);
+    }
+
+    const pts = (f.impact === "High" ? 40 : f.impact === "Medium" ? 25 : 10)
+      + (f.urgency === "High" ? 25 : f.urgency === "Medium" ? 15 : 5)
+      + Math.round(theme.frequency_score * 0.3);
+
+    return { theme, confidence, related, priv, priority: Math.min(98, pts), engine, model };
   }
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setResult(null);
-    let i = 0;
+    setSemanticWarning(null);
     setStep(0);
-    const iv = setInterval(() => {
-      i++;
-      if (i >= STEPS.length) {
-        clearInterval(iv);
-        const r = analyze();
-        const s: Suggestion = {
-          id: `SUG-${Date.now().toString().slice(-4)}`, title: f.title, description: r.priv.sanitized,
-          department: f.department, category: f.category, impact: f.impact, urgency: f.urgency, anonymous: f.anonymous,
-          created_at: new Date().toISOString().slice(0, 10), theme: r.theme.id, similarity_score: r.related[0]?.score ?? 0,
-          privacy_status: r.priv.injection ? "Flagged" : r.priv.fields.length ? "Sanitized" : "Passed", priority_score: r.priority,
-        };
-        add(s);
-        setResult(r);
-        setStep(-1);
-      } else setStep(i);
-    }, 450);
+
+    for (let i = 0; i < STEPS.length; i++) {
+      setStep(i);
+      await wait(i === 2 ? 550 : 300);
+    }
+
+    const r = await analyze();
+    const s: Suggestion = {
+      id: `SUG-${Date.now().toString().slice(-4)}`,
+      title: f.title,
+      description: r.priv.sanitized,
+      department: f.department,
+      category: f.category,
+      impact: f.impact,
+      urgency: f.urgency,
+      anonymous: f.anonymous,
+      created_at: new Date().toISOString().slice(0, 10),
+      theme: r.theme.id,
+      similarity_score: r.related[0]?.score ?? 0,
+      privacy_status: r.priv.injection ? "Flagged" : r.priv.fields.length ? "Sanitized" : "Passed",
+      priority_score: r.priority,
+    };
+    add(s);
+    setResult(r);
+    setStep(-1);
   };
 
-  const reset = () => { setResult(null); setF({ ...f, title: "", description: "", ack: false }); };
+  const reset = () => {
+    setResult(null);
+    setSemanticWarning(null);
+    setF({ ...f, title: "", description: "", ack: false });
+  };
   const busy = step >= 0;
 
   return (
@@ -112,7 +172,7 @@ function Submit() {
             <Checkbox checked={f.ack} onCheckedChange={(v) => setF({ ...f, ack: !!v })} className="mt-0.5" />
             I understand this prototype uses synthetic/demo data only.
           </label>
-          <Button type="submit" disabled={!f.ack || busy || !f.title}>
+          <Button type="submit" disabled={!f.ack || busy || !f.title || !f.description}>
             {busy ? <Loader2 className="animate-spin" /> : <Sparkles />} Analyze & Submit
           </Button>
         </form>
@@ -133,8 +193,9 @@ function Submit() {
           )}
           {result && (
             <div className="card-surface overflow-hidden">
-              <div className="flex items-center gap-2 border-b bg-success-soft px-5 py-3 text-sm font-semibold text-success">
-                <CheckCircle2 className="size-4" /> AI Analysis Complete
+              <div className="flex items-center justify-between gap-2 border-b bg-success-soft px-5 py-3 text-sm font-semibold text-success">
+                <span className="flex items-center gap-2"><CheckCircle2 className="size-4" /> AI Analysis Complete</span>
+                <span className="font-mono text-[10px] uppercase tracking-wide">{result.engine === "live" ? "Live semantic engine" : "Demo fallback"}</span>
               </div>
               <dl className="divide-y text-sm">
                 {[
@@ -150,6 +211,8 @@ function Submit() {
                   </div>
                 ))}
               </dl>
+              {result.model && <div className="border-t px-5 py-2 text-[10px] text-muted-foreground">Model: <span className="font-mono">{result.model}</span></div>}
+              {semanticWarning && <div className="border-t bg-warning/10 px-5 py-2 text-xs text-warning-foreground">{semanticWarning}</div>}
               {result.related.length > 0 && (
                 <ul className="border-t bg-muted/40 px-5 py-3 text-xs">
                   {result.related.map((r) => (
@@ -170,7 +233,9 @@ function Submit() {
           {!busy && !result && (
             <div className="card-surface p-5 text-sm text-muted-foreground">
               <Sparkles className="mb-2 size-5 text-primary" />
-              After submission, the AI engine assigns your idea to a recurring theme, finds related suggestions, and checks it for privacy and security issues.
+              {semanticApiConfigured()
+                ? "The configured semantic backend uses multilingual sentence embeddings for live similarity and theme assignment. Privacy and prompt-safety checks run before semantic processing."
+                : "The app is currently using its deterministic demo fallback. Configure VITE_SEMANTIC_API_URL to activate the live multilingual sentence-embedding service."}
             </div>
           )}
           <Collapsible className="card-surface">
@@ -179,11 +244,11 @@ function Submit() {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <ol className="list-decimal space-y-1.5 border-t px-5 py-4 pl-9 text-sm text-muted-foreground">
-                <li>The suggestion is converted into a semantic representation (embedding).</li>
-                <li>It is compared with existing ideas by meaning, not keywords.</li>
-                <li>It is assigned to the closest recurring theme.</li>
-                <li>It is checked for personal data and prompt-injection attempts.</li>
-                <li>It is added to trend and priority analysis.</li>
+                <li>The suggestion is checked for personal data and prompt-injection attempts.</li>
+                <li>The sanitized text is converted into a multilingual sentence embedding.</li>
+                <li>It is compared with existing ideas using cosine similarity.</li>
+                <li>Similarity-weighted evidence assigns the closest recurring theme.</li>
+                <li>The result is added to trend and priority analysis.</li>
               </ol>
             </CollapsibleContent>
           </Collapsible>
