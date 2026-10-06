@@ -8,21 +8,22 @@ A privacy-aware AI prototype for employee suggestion intelligence: semantic simi
 
 The prototype explores how an organization can move beyond a traditional suggestion box. Instead of reviewing isolated text entries one by one, the system groups conceptually similar ideas, highlights recurring organizational problems, and turns them into decision-ready themes for expert review.
 
-The UI was prototyped with Lovable. The semantic layer is implemented separately in Python/FastAPI so the similarity and theme assignment can be produced by a real multilingual embedding model rather than hard-coded demonstration values.
+The interface was prototyped with Lovable, while the semantic layer uses a real multilingual embedding model. The public demo can run the model directly in the browser, so semantic similarity is calculated from embeddings instead of fixed demonstration percentages. An optional Python/FastAPI backend is also included for a server-side deployment.
 
 ## Main capabilities
 
 - Employee problem / solution submission with anonymous mode
 - Privacy screening and basic prompt-injection detection
-- Multilingual sentence embeddings
+- Real multilingual sentence embeddings
 - Cosine-similarity search for related suggestions
 - Similarity-weighted recurring-theme assignment
+- English/German semantic matching
 - AI theme intelligence and improvement hypotheses
 - Innovation radar for frequency vs. estimated business impact
 - Human-review workflow and trustworthy-AI controls
 - Synthetic industrial/business demo data only
 
-## Architecture
+## Default architecture — self-contained public demo
 
 ```text
 Employee Suggestion
@@ -31,10 +32,8 @@ Employee Suggestion
 Privacy & Prompt-Safety Screening
         |
         v
-FastAPI Semantic Service
-        |
-        v
-Multilingual SentenceTransformer
+Browser ONNX Embedding Engine
+Transformers.js + multilingual MiniLM
         |
         +--> Cosine Similarity --> Related Suggestions
         |
@@ -44,9 +43,37 @@ Multilingual SentenceTransformer
 React / TypeScript Innovation Dashboard
 ```
 
+The default public application uses `@huggingface/transformers` and a quantized ONNX version of:
+
+```text
+Xenova/paraphrase-multilingual-MiniLM-L12-v2
+```
+
+The first semantic analysis can take longer because the model is downloaded and cached by the browser. Subsequent analyses are faster.
+
+## Optional server-side architecture
+
+For a controlled server deployment, the same frontend can use the FastAPI service in `backend/`:
+
+```text
+React Frontend
+      |
+      v
+FastAPI
+      |
+      v
+sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      |
+      +--> normalized embeddings
+      +--> cosine similarity
+      +--> theme assignment
+```
+
+Set `VITE_SEMANTIC_API_URL` to switch from the browser model to the remote semantic API.
+
 ## Frontend development
 
-Requirements: Node.js and npm.
+Requirements: Node.js 22+ and npm.
 
 ```bash
 git clone https://github.com/ChanduKomme/Secure-Innovation-Radar.git
@@ -55,21 +82,11 @@ npm install
 npm run dev
 ```
 
-The app continues to work in deterministic demo-fallback mode when no semantic API is configured.
+No semantic backend is required for the default mode. The browser downloads the embedding model on first use.
 
-## Live semantic backend
+If the real model cannot load, the UI falls back to a deterministic demonstration implementation and labels that state rather than presenting demo values as live AI output.
 
-The backend lives in `backend/` and uses FastAPI plus a multilingual SentenceTransformer.
-
-Default model:
-
-```text
-sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-```
-
-This supports a useful interview demo where semantically equivalent English and German ideas can be matched into the same theme.
-
-### Start the backend
+## Optional FastAPI semantic backend
 
 Python 3.10+ is recommended.
 
@@ -82,29 +99,19 @@ python -m pip install -r requirements.txt
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Check:
+Check it with:
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-The first semantic request may take longer because the embedding model is downloaded and loaded once.
+Then create a root `.env` file:
 
-### Connect the frontend
-
-Create a local `.env` in the repository root:
-
-```bash
+```text
 VITE_SEMANTIC_API_URL=http://localhost:8000
 ```
 
-Then restart the frontend:
-
-```bash
-npm run dev
-```
-
-When configured, the Similar Ideas page displays live embedding-based scores and the Submit Idea workflow uses the backend for semantic theme assignment. If the service is unreachable, the frontend falls back safely to the existing deterministic demo logic and labels that state clearly.
+Restart the frontend after changing the environment variable.
 
 ## API
 
@@ -133,9 +140,20 @@ Example request:
 }
 ```
 
-The API returns the detected theme, an interpretable confidence indicator, and related suggestion IDs with live cosine-similarity scores.
+The API returns the detected theme, an interpretable confidence indicator, and related suggestion IDs with model-generated cosine-similarity scores.
 
 > The confidence indicator is not presented as a calibrated probability. It combines nearest-neighbor semantic strength with agreement among similarity-weighted theme evidence.
+
+## Multilingual demo
+
+Try semantically equivalent English and German inputs:
+
+```text
+Detect cutting-tool wear using acoustic signals.
+Werkzeugverschleiß anhand akustischer Signale frühzeitig erkennen.
+```
+
+The multilingual embedding model is intended to place conceptually equivalent suggestions near each other even when they are written in different languages.
 
 ## Privacy and security positioning
 
@@ -156,6 +174,8 @@ All employee suggestions shown in the prototype are synthetic. Public-research a
 
 Frontend: React, TypeScript, TanStack Router, Tailwind/shadcn-style components
 
-Semantic backend: Python, FastAPI, SentenceTransformers, NumPy
+Browser semantic engine: Transformers.js, ONNX, multilingual MiniLM embeddings
+
+Optional backend: Python, FastAPI, SentenceTransformers, NumPy
 
 UI prototyping: Lovable
