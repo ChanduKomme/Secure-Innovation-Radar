@@ -1,24 +1,33 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Search, Info, ArrowRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, Info, ArrowRight, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DEPARTMENTS, themeById } from "@/data/mock";
+import { DEPARTMENTS, themeById, type Theme } from "@/data/mock";
 import { classifyTheme, findSimilar } from "@/lib/semantic";
+import { analyzeSemantic, semanticApiConfigured, type LiveRelatedResult } from "@/lib/semantic-api";
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
 
 const ARCH = [
   { t: "Employee Suggestion", d: "" },
-  { t: "Sentence Embedding", d: "Planned production implementation: multilingual sentence-transformer or enterprise embedding model." },
-  { t: "Vector Similarity", d: "" },
+  { t: "Sentence Embedding", d: "Live implementation: multilingual sentence-transformer model when the semantic backend is configured." },
+  { t: "Vector Similarity", d: "Cosine similarity over normalized embeddings." },
   { t: "Top Related Suggestions", d: "" },
-  { t: "Theme Assignment", d: "" },
+  { t: "Theme Assignment", d: "Similarity-weighted evidence from related suggestions." },
 ];
 const DEFAULT = "Use acoustic signals to detect cutting-tool wear before quality decreases.";
+
+type SimilarState = {
+  theme: Theme;
+  confidence: number;
+  results: LiveRelatedResult[];
+  engine: "live" | "fallback";
+  model?: string;
+};
 
 export const Route = createFileRoute("/similar")({
   validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined }),
@@ -32,12 +41,63 @@ function Similar() {
   const [input, setInput] = useState(initial ?? DEFAULT);
   const [query, setQuery] = useState(initial ?? DEFAULT);
   const [dept, setDept] = useState("all");
+  const [loading, setLoading] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
 
-  const { theme, confidence } = useMemo(() => classifyTheme(query), [query]);
-  const results = useMemo(
-    () => findSimilar(query, suggestions.filter((s) => dept === "all" || s.department === dept), 6).filter((r) => r.suggestion.title.toLowerCase() !== query.toLowerCase().replace(/\.$/, "")),
-    [query, suggestions, dept],
+  const filteredSuggestions = useMemo(
+    () => suggestions.filter((s) => dept === "all" || s.department === dept),
+    [suggestions, dept],
   );
+
+  const localState = useMemo<SimilarState>(() => {
+    const local = classifyTheme(query);
+    return {
+      theme: local.theme,
+      confidence: local.confidence,
+      results: findSimilar(query, filteredSuggestions, 6).filter((r) => r.suggestion.title.toLowerCase() !== query.toLowerCase().replace(/\.$/, "")),
+      engine: "fallback",
+    };
+  }, [query, filteredSuggestions]);
+
+  const [state, setState] = useState<SimilarState>(localState);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      if (!semanticApiConfigured()) {
+        setState(localState);
+        setWarning(null);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const live = await analyzeSemantic(query, filteredSuggestions, 6);
+        if (cancelled) return;
+        setState({
+          theme: live.theme,
+          confidence: live.confidence,
+          results: live.related.filter((r) => r.suggestion.title.toLowerCase() !== query.toLowerCase().replace(/\.$/, "")),
+          engine: "live",
+          model: live.model,
+        });
+        setWarning(null);
+      } catch (error) {
+        console.warn("Live semantic API unavailable; using fallback", error);
+        if (cancelled) return;
+        setState(localState);
+        setWarning("Live semantic service was unavailable, so these results use the deterministic demo fallback.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void run();
+    return () => { cancelled = true; };
+  }, [query, filteredSuggestions, localState]);
+
+  const { theme, confidence, results } = state;
 
   return (
     <>
@@ -54,7 +114,7 @@ function Similar() {
                   {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Button type="submit" size="sm"><Search /> Find Similar Ideas</Button>
+              <Button type="submit" size="sm" disabled={loading}>{loading ? <Loader2 className="animate-spin" /> : <Search />} Find Similar Ideas</Button>
             </div>
           </form>
 
@@ -63,6 +123,8 @@ function Similar() {
             <div className="p-4"><div className="eyebrow">Confidence</div><div className="mt-1 font-mono text-lg font-semibold">{confidence}%</div></div>
             <div className="p-4"><div className="eyebrow">Related Suggestions</div><div className="mt-1 font-mono text-lg font-semibold">{results.length}</div></div>
           </div>
+
+          {warning && <div className="rounded-md border border-warning/30 bg-warning/10 px-4 py-2 text-xs text-muted-foreground">{warning}</div>}
 
           <div className="space-y-3">
             {results.map((r, i) => {
@@ -82,7 +144,7 @@ function Similar() {
                       <div className="font-mono text-lg font-semibold tabular-nums">{pct}%</div>
                       <div className="text-[11px] text-muted-foreground">similarity</div>
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-secondary">
-                        <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} />
                       </div>
                     </div>
                   </div>
@@ -91,9 +153,14 @@ function Similar() {
             })}
             {results.length === 0 && <div className="card-surface p-8 text-center text-sm text-muted-foreground">No conceptually similar suggestions found. Try describing the underlying problem.</div>}
           </div>
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Info className="size-3.5" /> Semantic similarity compares meaning, not only exact keywords. Scores shown are demonstration values (demo mode).</p>
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Info className="size-3.5" />
+            {state.engine === "live"
+              ? "Similarity scores are calculated live from multilingual sentence embeddings using cosine similarity."
+              : "Semantic similarity compares meaning, not only exact keywords. Scores shown currently use the deterministic demo fallback."}
+          </p>
           <div className="card-surface p-4">
-            <div className="mb-3 flex items-center justify-between"><span className="text-[13px] font-semibold">Architecture Preview</span><span className="eyebrow">planned production pipeline</span></div>
+            <div className="mb-3 flex items-center justify-between"><span className="text-[13px] font-semibold">Architecture Preview</span><span className="eyebrow">semantic pipeline</span></div>
             <div className="grid gap-2 sm:grid-cols-5">
               {ARCH.map((a, i) => (
                 <div key={a.t} className="relative flex flex-col">
@@ -117,9 +184,10 @@ function Similar() {
           <div className="mt-4 space-y-2 border-t pt-4 text-xs text-muted-foreground">
             <div className="flex justify-between"><span>Method</span>
               <TooltipProvider><Tooltip><TooltipTrigger className="inline-flex items-center gap-1 font-mono underline decoration-dotted underline-offset-2">cosine similarity <Info className="size-3" /></TooltipTrigger>
-                <TooltipContent className="max-w-60 text-xs">Prototype similarity scores are demonstration values. Production implementation would use sentence embeddings and vector similarity.</TooltipContent></Tooltip></TooltipProvider></div>
-            <div className="flex justify-between"><span>Corpus</span><span className="font-mono">{suggestions.length} ideas</span></div>
-            <div className="flex justify-between"><span>Engine</span><span className="font-mono">demo mode</span></div>
+                <TooltipContent className="max-w-64 text-xs">{state.engine === "live" ? "Live cosine similarity between normalized multilingual sentence embeddings." : "Demo fallback. Configure the semantic API to calculate live sentence embeddings and vector similarity."}</TooltipContent></Tooltip></TooltipProvider></div>
+            <div className="flex justify-between"><span>Corpus</span><span className="font-mono">{filteredSuggestions.length} ideas</span></div>
+            <div className="flex justify-between"><span>Engine</span><span className="font-mono">{state.engine === "live" ? "live embeddings" : "demo fallback"}</span></div>
+            {state.model && <div className="flex items-start justify-between gap-4"><span>Model</span><span className="max-w-52 break-all text-right font-mono">{state.model}</span></div>}
           </div>
         </aside>
       </div>
