@@ -31,7 +31,7 @@ type AnalysisResult = {
   priv: ReturnType<typeof privacyScan>;
   priority: number;
   engine: "live" | "fallback";
-  model?: string;
+  model: string | undefined;
 };
 
 function wait(ms: number) {
