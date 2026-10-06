@@ -60,7 +60,7 @@ function Overview() {
 
       <div className="mt-4 grid gap-4 xl:grid-cols-5">
         <Section title="Innovation Activity" description="Monthly volume of new suggestions and detected recurring themes" className="xl:col-span-3">
-          <div className="h-72">
+          <div className="h-80 w-full">
             <ResponsiveContainer>
               <LineChart data={ACTIVITY} margin={{ left: -20, right: 8, top: 4 }}>
                 <CartesianGrid stroke="var(--border)" vertical={false} />
@@ -83,11 +83,10 @@ function Overview() {
                 <ThemeIcon name={t.icon} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{t.short}</div>
-                  <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                    {t.suggestion_count} suggestions · <Trend v={t.trend_percentage} /> · <Pill value={t.status} />
+                  <div className="mt-0.5 flex items-center gap-2 whitespace-nowrap text-xs text-muted-foreground">
+                    <span>{t.suggestion_count} ideas</span><Trend v={t.trend_percentage} /><Pill value={t.priority} />
                   </div>
                 </div>
-                <Pill value={t.priority} />
                 <Button variant="ghost" size="sm" asChild>
                   <Link to="/themes/$themeId" params={{ themeId: t.id }}>View Theme <ArrowUpRight /></Link>
                 </Button>
@@ -105,14 +104,14 @@ function Overview() {
           <div className="flex flex-wrap gap-2">
             <Input placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} className="h-8 w-44" />
             <Select value={dept} onValueChange={setDept}>
-              <SelectTrigger className="h-8 w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-40"><SelectValue>{dept === "all" ? "All departments" : dept}</SelectValue></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All departments</SelectItem>
                 {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={impact} onValueChange={setImpact}>
-              <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-32"><SelectValue>{impact === "all" ? "All impact" : impact}</SelectValue></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All impact</SelectItem>
                 {["High", "Medium", "Low"].map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}

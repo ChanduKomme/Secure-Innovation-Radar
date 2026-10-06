@@ -40,7 +40,7 @@ function Similar() {
             <Textarea rows={2} value={input} onChange={(e) => setInput(e.target.value)} className="resize-none" />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
               <Select value={dept} onValueChange={setDept}>
-                <SelectTrigger className="h-8 w-44"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-8 w-44"><SelectValue>{dept === "all" ? "All departments" : dept}</SelectValue></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All departments</SelectItem>
                   {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}

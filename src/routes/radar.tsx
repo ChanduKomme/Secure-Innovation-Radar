@@ -32,9 +32,9 @@ function Tip({ active, payload }: { active?: boolean; payload?: { payload: Theme
 }
 
 function RadarPage() {
-  const [sort, setSort] = useState<"suggestion_count" | "impact_score" | "trend_percentage">("impact_score");
+  const [sort, setSort] = useState<"rank" | "suggestion_count" | "impact_score" | "trend_percentage">("rank");
   const ranked = [...THEMES].sort((a, b) => b.impact_score * b.frequency_score - a.impact_score * a.frequency_score);
-  const rows = [...ranked].sort((a, b) => b[sort] - a[sort]);
+  const rows = sort === "rank" ? ranked : [...ranked].sort((a, b) => b[sort] - a[sort]);
   const H = ({ k, children }: { k: typeof sort; children: string }) => (
     <button className="inline-flex items-center gap-1" onClick={() => setSort(k)}>{children}<ArrowUpDown className="size-3" /></button>
   );
@@ -48,7 +48,7 @@ function RadarPage() {
             <ResponsiveContainer>
               <ScatterChart margin={{ top: 16, right: 24, bottom: 24, left: 4 }}>
                 <ReferenceArea x1={50} x2={100} y1={50} y2={100} fill="var(--primary)" fillOpacity={0.05} stroke="var(--primary)" strokeOpacity={0.25} strokeDasharray="4 4"
-                  label={{ value: "Priority review zone", position: "insideTopRight", fontSize: 11, fill: "var(--primary)" }} />
+                  label={{ value: "Priority review zone", position: "insideBottomRight", fontSize: 11, fill: "var(--primary)" }} />
                 <CartesianGrid stroke="var(--border)" />
                 <XAxis type="number" dataKey="frequency_score" domain={[0, 100]} tick={axis} label={{ value: "Frequency of Employee Reports →", position: "insideBottom", offset: -14, fontSize: 12, fill: "var(--muted-foreground)" }} />
                 <YAxis type="number" dataKey="impact_score" domain={[0, 100]} tick={axis} label={{ value: "Estimated Business Impact →", angle: -90, position: "insideLeft", offset: 14, fontSize: 12, fill: "var(--muted-foreground)" }} />
@@ -56,7 +56,7 @@ function RadarPage() {
                 <Tooltip content={<Tip />} cursor={false} />
                 <Scatter data={THEMES}>
                   {THEMES.map((t) => <Cell key={t.id} fill={COLOR[t.priority]} fillOpacity={0.55} stroke={COLOR[t.priority]} strokeWidth={1.5} />)}
-                  <LabelList dataKey="short" position="top" offset={14} style={{ fontSize: 11, fill: "var(--foreground)", fontWeight: 500 }} />
+                  <LabelList dataKey="short" position="top" offset={14} fill="var(--foreground)" stroke="none" fontSize={11} fontWeight={500} />
                 </Scatter>
               </ScatterChart>
             </ResponsiveContainer>
@@ -80,7 +80,7 @@ function RadarPage() {
           <Table>
             <TableHeader>
               <TableRow className="text-xs">
-                <TableHead className="pl-5">Rank</TableHead><TableHead>Theme</TableHead>
+                <TableHead className="pl-5"><H k="rank">Rank</H></TableHead><TableHead>Theme</TableHead>
                 <TableHead><H k="suggestion_count">Frequency</H></TableHead><TableHead><H k="impact_score">Impact</H></TableHead>
                 <TableHead><H k="trend_percentage">Trend</H></TableHead><TableHead>Priority</TableHead><TableHead className="pr-5">Recommended Action</TableHead>
               </TableRow>
