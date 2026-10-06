@@ -1,24 +1,26 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { SUGGESTIONS, type Suggestion } from "@/data/mock";
 
+export type ProposalStatus = "open" | "review" | "investigation" | "dismissed";
+
 interface Store {
   suggestions: Suggestion[];
   add: (s: Suggestion) => void;
-  reviewed: Set<string>;
-  markReview: (themeId: string) => void;
+  proposal: Record<string, ProposalStatus>;
+  setProposal: (themeId: string, s: ProposalStatus) => void;
 }
 const Ctx = createContext<Store | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [suggestions, setS] = useState<Suggestion[]>(SUGGESTIONS);
-  const [reviewed, setR] = useState<Set<string>>(new Set());
+  const [proposal, setP] = useState<Record<string, ProposalStatus>>({});
   return (
     <Ctx.Provider
       value={{
         suggestions,
         add: (s) => setS((p) => [s, ...p]),
-        reviewed,
-        markReview: (id) => setR((p) => new Set(p).add(id)),
+        proposal,
+        setProposal: (id, s) => setP((p) => ({ ...p, [id]: s })),
       }}
     >
       {children}
