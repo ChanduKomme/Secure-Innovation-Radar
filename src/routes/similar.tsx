@@ -7,14 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DEPARTMENTS, themeById, type Theme } from "@/data/mock";
 import { classifyTheme, findSimilar } from "@/lib/semantic";
-import { analyzeSemantic, semanticApiConfigured, type LiveRelatedResult } from "@/lib/semantic-api";
+import { analyzeSemantic, semanticEngineMode, type LiveRelatedResult } from "@/lib/semantic-api";
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
 
 const ARCH = [
   { t: "Employee Suggestion", d: "" },
-  { t: "Sentence Embedding", d: "Live implementation: multilingual sentence-transformer model when the semantic backend is configured." },
+  { t: "Sentence Embedding", d: "Live multilingual SentenceTransformer-compatible ONNX embeddings; the public demo runs them directly in the browser by default." },
   { t: "Vector Similarity", d: "Cosine similarity over normalized embeddings." },
   { t: "Top Related Suggestions", d: "" },
   { t: "Theme Assignment", d: "Similarity-weighted evidence from related suggestions." },
@@ -43,6 +43,7 @@ function Similar() {
   const [dept, setDept] = useState("all");
   const [loading, setLoading] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
+  const mode = semanticEngineMode();
 
   const filteredSuggestions = useMemo(
     () => suggestions.filter((s) => dept === "all" || s.department === dept),
@@ -65,12 +66,6 @@ function Similar() {
     let cancelled = false;
 
     async function run() {
-      if (!semanticApiConfigured()) {
-        setState(localState);
-        setWarning(null);
-        return;
-      }
-
       setLoading(true);
       try {
         const live = await analyzeSemantic(query, filteredSuggestions, 6);
@@ -84,10 +79,10 @@ function Similar() {
         });
         setWarning(null);
       } catch (error) {
-        console.warn("Live semantic API unavailable; using fallback", error);
+        console.warn("Real semantic engine unavailable; using fallback", error);
         if (cancelled) return;
         setState(localState);
-        setWarning("Live semantic service was unavailable, so these results use the deterministic demo fallback.");
+        setWarning("The real semantic model could not load, so these results use the deterministic demo fallback.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -151,12 +146,12 @@ function Similar() {
                 </article>
               );
             })}
-            {results.length === 0 && <div className="card-surface p-8 text-center text-sm text-muted-foreground">No conceptually similar suggestions found. Try describing the underlying problem.</div>}
+            {results.length === 0 && !loading && <div className="card-surface p-8 text-center text-sm text-muted-foreground">No conceptually similar suggestions found. Try describing the underlying problem.</div>}
           </div>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Info className="size-3.5" />
             {state.engine === "live"
-              ? "Similarity scores are calculated live from multilingual sentence embeddings using cosine similarity."
+              ? `Similarity scores are calculated live from multilingual sentence embeddings using cosine similarity (${mode === "browser" ? "in-browser ONNX" : "FastAPI backend"}).`
               : "Semantic similarity compares meaning, not only exact keywords. Scores shown currently use the deterministic demo fallback."}
           </p>
           <div className="card-surface p-4">
@@ -184,9 +179,9 @@ function Similar() {
           <div className="mt-4 space-y-2 border-t pt-4 text-xs text-muted-foreground">
             <div className="flex justify-between"><span>Method</span>
               <TooltipProvider><Tooltip><TooltipTrigger className="inline-flex items-center gap-1 font-mono underline decoration-dotted underline-offset-2">cosine similarity <Info className="size-3" /></TooltipTrigger>
-                <TooltipContent className="max-w-64 text-xs">{state.engine === "live" ? "Live cosine similarity between normalized multilingual sentence embeddings." : "Demo fallback. Configure the semantic API to calculate live sentence embeddings and vector similarity."}</TooltipContent></Tooltip></TooltipProvider></div>
+                <TooltipContent className="max-w-64 text-xs">{state.engine === "live" ? "Live cosine similarity between normalized multilingual sentence embeddings." : "The real model could not load, so the deterministic demo fallback is active."}</TooltipContent></Tooltip></TooltipProvider></div>
             <div className="flex justify-between"><span>Corpus</span><span className="font-mono">{filteredSuggestions.length} ideas</span></div>
-            <div className="flex justify-between"><span>Engine</span><span className="font-mono">{state.engine === "live" ? "live embeddings" : "demo fallback"}</span></div>
+            <div className="flex justify-between"><span>Engine</span><span className="font-mono">{state.engine === "live" ? (mode === "browser" ? "browser ONNX" : "FastAPI") : "demo fallback"}</span></div>
             {state.model && <div className="flex items-start justify-between gap-4"><span>Model</span><span className="max-w-52 break-all text-right font-mono">{state.model}</span></div>}
           </div>
         </aside>
