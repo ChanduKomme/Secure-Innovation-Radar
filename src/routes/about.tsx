@@ -51,7 +51,7 @@ function About() {
         </div>
       </div>
 
-      <h2 className="mb-3 mt-6 text-sm font-semibold">Future Development</h2>
+      <h2 className="eyebrow mb-2 mt-5">Future Development</h2>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {FUTURE.map((f, i) => (
           <div key={f} className="card-surface flex items-center gap-2 p-3 text-sm">
@@ -60,7 +60,7 @@ function About() {
           </div>
         ))}
       </div>
-      <div className="mt-6 space-y-1 rounded-md border bg-card p-4 text-xs text-muted-foreground">
+      <div className="mt-4 space-y-1 rounded-md border bg-card p-4 text-xs text-muted-foreground">
         <p><strong className="text-foreground">Independent Prototype · Synthetic Demo Data.</strong> Not an official GFE application; no real employee or internal data is used.</p>
         <p>Public research alignment examples are illustrative and based only on publicly available themes.</p>
       </div>
