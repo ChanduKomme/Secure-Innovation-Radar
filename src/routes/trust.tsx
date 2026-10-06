@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, EyeOff, FileSearch, Lock, ScrollText, ShieldAlert, UserCheck, Scale, KeyRound, Server, Users, Lightbulb, ClipboardList } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { privacyScan } from "@/lib/semantic";
 import { Flow, PageHeader, Pill, Section } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
@@ -12,12 +13,12 @@ export const Route = createFileRoute("/trust")({
 });
 
 const STATUS = [
-  { l: "Anonymous Submission", v: "Enabled", i: EyeOff },
-  { l: "PII Detection", v: "Enabled", i: FileSearch },
-  { l: "Sensitive Data Masking", v: "Enabled", i: Lock },
-  { l: "Prompt Injection Screening", v: "Enabled", i: ShieldAlert },
-  { l: "Human Review", v: "Required", i: UserCheck },
-  { l: "Audit Logging", v: "Enabled", i: ScrollText },
+  { id: "CTL-01", l: "Anonymous Submission", v: "Enabled", m: "Identity decoupled at intake", i: EyeOff },
+  { id: "CTL-02", l: "PII Detection", v: "Enabled", m: "Regex + NER entity scan", i: FileSearch },
+  { id: "CTL-03", l: "Sensitive Data Masking", v: "Enabled", m: "Typed placeholder redaction", i: Lock },
+  { id: "CTL-04", l: "Prompt Injection Screening", v: "Enabled", m: "Pattern + heuristic classifier", i: ShieldAlert },
+  { id: "CTL-05", l: "Human Review", v: "Required", m: "Expert sign-off before action", i: UserCheck },
+  { id: "CTL-06", l: "Audit Logging", v: "Enabled", m: "Append-only processing log", i: ScrollText },
 ];
 const PRINCIPLES = [
   { t: "Privacy by Design", d: "Personal data is removed before any AI processing.", i: Lock },
@@ -27,6 +28,15 @@ const PRINCIPLES = [
   { t: "Explainable AI Output", d: "Each assignment shows confidence and related evidence.", i: Lightbulb },
   { t: "Auditability", d: "Every processing step is logged and reviewable.", i: ClipboardList },
 ];
+
+const LOG = [
+  ["2026-08-28 14:02:11", "pii.redact", "CTL-03", "SUG-1041", "Sanitized"],
+  ["2026-08-28 13:47:55", "injection.screen", "CTL-04", "SUG-1040", "Flagged"],
+  ["2026-08-28 13:47:55", "review.queue", "CTL-05", "SUG-1040", "Required"],
+  ["2026-08-28 11:20:03", "pii.scan", "CTL-02", "SUG-1039", "Passed"],
+  ["2026-08-27 16:05:42", "pii.redact", "CTL-03", "SUG-1037", "Sanitized"],
+  ["2026-08-27 09:12:19", "injection.screen", "CTL-04", "SUG-1036", "Passed"],
+] as const;
 
 function Highlight({ text }: { text: string }) {
   const parts = text.split(/(\[PERSON\]|\[EMAIL\])/);
@@ -42,23 +52,26 @@ function Trust() {
   return (
     <>
       <PageHeader title="Trust, Privacy & AI Security" subtitle="Controls applied to every suggestion before and after AI processing." />
-      <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         {STATUS.map((s) => (
-          <div key={s.l} className="card-surface p-3.5">
-            <s.i className="size-4 text-primary" />
-            <div className="mt-2 text-xs font-medium leading-tight">{s.l}</div>
-            <Pill value={s.v} className="mt-2" />
+          <div key={s.l} className="card-surface p-3">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[10px] text-muted-foreground">{s.id}</span>
+              <Pill value={s.v} />
+            </div>
+            <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold leading-tight"><s.i className="size-3.5 shrink-0 text-primary" />{s.l}</div>
+            <div className="mt-1 text-[11px] text-muted-foreground">{s.m}</div>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
+      <div className="mt-3 grid gap-3 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
           <Section title="Privacy Guard Example" description="Edit the input to test live detection"
             actions={<Pill value={p.fields.length ? "Sanitized" : "Passed"} />}>
             <div className="eyebrow mb-1.5">Original employee input</div>
             <Textarea rows={2} value={pii} onChange={(e) => setPii(e.target.value)} className="resize-none" />
-            <div className="mt-4 grid gap-4 sm:grid-cols-[180px_1fr]">
+            <div className="mt-3 grid gap-3 sm:grid-cols-[180px_1fr]">
               <div>
                 <div className="eyebrow mb-1.5">Detected fields</div>
                 <ul className="space-y-1 font-mono text-xs">
@@ -78,7 +91,7 @@ function Trust() {
             <div className="eyebrow mb-1.5">Example input</div>
             <Textarea rows={2} value={inj} onChange={(e) => setInj(e.target.value)} className="resize-none font-mono text-xs" />
             {j.injection ? (
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-md border border-destructive/30 bg-destructive-soft p-3">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-destructive"><AlertTriangle className="size-4" /> Detected</div>
                   <p className="mt-1 text-sm">Potential instruction override attempt</p>
@@ -98,10 +111,16 @@ function Trust() {
 
         <Section title="Processing pipeline" description="Untrusted input → reviewable output">
           <Flow highlight={[2, 3, 4]} steps={["Employee Input", "Input Validation", "PII Detection", "Sensitive Data Redaction", "Prompt Injection Screening", "Semantic AI Processing", "Human-Reviewable Output"]} />
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-3 font-mono text-[11px]">
+            <span className="text-muted-foreground">trust_boundary</span><span className="text-right">after stage 05</span>
+            <span className="text-muted-foreground">model_input</span><span className="text-right">sanitized only</span>
+            <span className="text-muted-foreground">system_prompt</span><span className="text-right">immutable</span>
+            <span className="text-muted-foreground">output_mode</span><span className="text-right">advisory</span>
+          </div>
         </Section>
       </div>
 
-      <h2 className="mb-3 mt-6 text-sm font-semibold">Trustworthy AI Principles</h2>
+      <h2 className="eyebrow mb-2 mt-5">Trustworthy AI Principles</h2>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {PRINCIPLES.map((x) => (
           <div key={x.t} className="card-surface flex gap-3 p-4">
@@ -110,7 +129,25 @@ function Trust() {
           </div>
         ))}
       </div>
-      <p className="mt-4 flex items-start gap-2 rounded-md border bg-card p-3 text-xs text-muted-foreground"><Scale className="size-4 shrink-0" />This prototype separates untrusted employee content from trusted system instructions and demonstrates privacy-aware processing before AI analysis.</p>
+      <Section title="Processing audit log" description="Most recent guard events · synthetic" className="mt-3">
+        <div className="-m-4 overflow-x-auto">
+          <Table>
+            <TableHeader><TableRow><TableHead className="pl-4">Timestamp</TableHead><TableHead>Event</TableHead><TableHead>Control</TableHead><TableHead>Subject</TableHead><TableHead className="pr-4">Result</TableHead></TableRow></TableHeader>
+            <TableBody>
+              {LOG.map((l) => (
+                <TableRow key={l[0]} className="font-mono text-xs">
+                  <TableCell className="whitespace-nowrap pl-4 text-muted-foreground">{l[0]}</TableCell>
+                  <TableCell className="whitespace-nowrap">{l[1]}</TableCell>
+                  <TableCell className="text-muted-foreground">{l[2]}</TableCell>
+                  <TableCell className="whitespace-nowrap">{l[3]}</TableCell>
+                  <TableCell className="pr-4"><Pill value={l[4]} /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Section>
+      <p className="mt-3 flex items-start gap-2 rounded-md border bg-card p-3 text-xs text-muted-foreground"><Scale className="size-4 shrink-0" />This prototype separates untrusted employee content from trusted system instructions and demonstrates privacy-aware processing before AI analysis.</p>
     </>
   );
 }

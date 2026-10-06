@@ -28,11 +28,11 @@ function About() {
   return (
     <>
       <PageHeader title="Prototype Architecture" subtitle="How an employee suggestion becomes a management insight." />
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         <Section title="System flow">
           <Flow highlight={[2, 6]} steps={["Employee Suggestion", "Web Interface", "Privacy & Security Guard", "Semantic Embedding Engine", "Similarity Search", "Semantic Clustering", "Local / Controlled LLM", "Trend & Priority Analysis", "Management Dashboard"]} />
         </Section>
-        <div className="space-y-4 lg:col-span-2">
+        <div className="space-y-3 lg:col-span-2">
           <div className="grid gap-3 sm:grid-cols-2">
             {TECH.map((t) => (
               <div key={t.k} className="card-surface flex items-center gap-3 p-3.5">
@@ -51,7 +51,7 @@ function About() {
         </div>
       </div>
 
-      <h2 className="mb-3 mt-6 text-sm font-semibold">Future Development</h2>
+      <h2 className="eyebrow mb-2 mt-5">Future Development</h2>
       <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {FUTURE.map((f, i) => (
           <div key={f} className="card-surface flex items-center gap-2 p-3 text-sm">
@@ -60,7 +60,7 @@ function About() {
           </div>
         ))}
       </div>
-      <div className="mt-6 space-y-1 rounded-md border bg-card p-4 text-xs text-muted-foreground">
+      <div className="mt-4 space-y-1 rounded-md border bg-card p-4 text-xs text-muted-foreground">
         <p><strong className="text-foreground">Independent Prototype · Synthetic Demo Data.</strong> Not an official GFE application; no real employee or internal data is used.</p>
         <p>Public research alignment examples are illustrative and based only on publicly available themes.</p>
       </div>

@@ -21,7 +21,7 @@ const tone = {
 export function Pill({ value, className }: { value: string; className?: string }) {
   const t = (tone as Record<string, string>)[value] ?? "bg-secondary text-secondary-foreground";
   return (
-    <span className={cn("inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium leading-4", t, className)}>
+    <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-sm border border-current/15 px-1.5 text-[11px] font-medium leading-none", t, className)}>
       {value}
     </span>
   );
@@ -47,10 +47,10 @@ export function ThemeIcon({ name, className }: { name: string; className?: strin
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b pb-4">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+        <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
+        {subtitle && <p className="mt-0.5 text-[13px] text-muted-foreground">{subtitle}</p>}
       </div>
       {actions}
     </div>
@@ -59,15 +59,15 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 
 export function Section({ title, description, actions, children, className }: { title: string; description?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("card-surface", className)}>
-      <header className="flex items-center justify-between gap-3 border-b px-5 py-3.5">
+    <section className={cn("card-surface flex flex-col", className)}>
+      <header className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2.5">
         <div>
-          <h2 className="text-sm font-semibold">{title}</h2>
+          <h2 className="text-[13px] font-semibold">{title}</h2>
           {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </div>
         {actions}
       </header>
-      <div className="p-5">{children}</div>
+      <div className="flex-1 p-4">{children}</div>
     </section>
   );
 }
@@ -79,14 +79,14 @@ export function Flow({ steps, highlight }: { steps: string[]; highlight?: number
         <li key={s} className="flex flex-col items-center">
           <div
             className={cn(
-              "flex w-full max-w-sm items-center gap-3 rounded-md border px-3 py-2 text-sm",
+              "flex w-full items-center gap-3 rounded-sm border px-3 py-1.5 text-[13px]",
               highlight?.includes(i) ? "border-primary bg-primary-soft text-primary font-medium" : "bg-card",
             )}
           >
             <span className="font-mono text-[11px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
             {s}
           </div>
-          {i < steps.length - 1 && <Icons.ArrowDown className="my-1 size-3.5 text-muted-foreground" />}
+          {i < steps.length - 1 && <span className="h-2.5 w-px bg-border" />}
         </li>
       ))}
     </ol>

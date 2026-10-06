@@ -34,7 +34,7 @@ function ThemeNotFound() {
   return (
     <div className="card-surface p-10 text-center">
       <p className="text-sm text-muted-foreground">This theme does not exist.</p>
-      <Button asChild size="sm" className="mt-4"><Link to="/themes">Back to themes</Link></Button>
+      <Button asChild size="sm" className="mt-3"><Link to="/themes">Back to themes</Link></Button>
     </div>
   );
 }
@@ -66,8 +66,8 @@ function ThemeDetail() {
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
+      <div className="grid gap-3 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
           <Section title="AI-generated problem summary" actions={<span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Sparkles className="size-3" /> Generated · demo</span>}>
             <p className="text-sm leading-relaxed">{t.summary}</p>
             <div className="mt-4 rounded-md border-l-2 border-primary bg-primary-soft px-4 py-3">
@@ -91,7 +91,7 @@ function ThemeDetail() {
             </ul>
           </Section>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <Section title="Common concepts">
             <div className="flex flex-wrap gap-1.5">
               {t.keywords.map((k) => <span key={k} className="rounded border bg-secondary px-2 py-0.5 font-mono text-xs">{k}</span>)}

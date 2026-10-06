@@ -22,7 +22,7 @@ function AppSidebar() {
   const active = (u: string) => (u === "/" ? path === "/" : path.startsWith(u));
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-14 flex-row items-center gap-2 border-b border-sidebar-border px-3">
+      <SidebarHeader className="h-12 flex-row items-center gap-2 border-b border-sidebar-border px-3">
         <span className="grid size-7 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
           <Radar className="size-4" />
         </span>
@@ -62,9 +62,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex h-14 items-center gap-3 border-b bg-card/95 px-4 backdrop-blur">
+          <header className="sticky top-0 z-10 flex h-12 items-center gap-3 border-b bg-card px-3 md:px-4 backdrop-blur">
             <SidebarTrigger />
-            <span className="text-sm font-semibold">Secure Innovation Radar</span>
+            <span className="hidden text-sm font-semibold sm:inline">Secure Innovation Radar</span>
             <span className="rounded border border-primary/30 bg-primary-soft px-1.5 py-0.5 text-[11px] font-medium text-primary">
               Synthetic Demo
             </span>
@@ -74,14 +74,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                 AI Engine: Demo Mode
               </span>
               <Button size="sm" asChild>
-                <Link to="/submit"><Plus /> Submit Idea</Link>
+                <Link to="/submit"><Plus /><span className="hidden sm:inline">Submit Idea</span></Link>
               </Button>
               <span className="grid size-8 place-items-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground">
                 DU
               </span>
             </div>
           </header>
-          <main className="mx-auto w-full max-w-[1400px] flex-1 p-4 md:p-6">{children}</main>
+          <main className="mx-auto w-full max-w-[1440px] flex-1 p-3 md:p-5">{children}</main>
           <footer className="border-t px-6 py-3 text-[11px] text-muted-foreground">
             Independent prototype using synthetic data only. Not affiliated with or commissioned by GFE.
           </footer>

@@ -67,7 +67,7 @@ function Submit() {
   return (
     <>
       <PageHeader title="Submit an Improvement Idea" subtitle="Share a problem, improvement opportunity, or proposed solution." />
-      <div className="grid gap-4 lg:grid-cols-5">
+      <div className="grid gap-3 lg:grid-cols-5">
         <form onSubmit={submit} className="card-surface space-y-5 p-5 lg:col-span-3">
           <div className="space-y-1.5">
             <Label htmlFor="t">Title</Label>
@@ -77,7 +77,7 @@ function Submit() {
             <Label htmlFor="d">Description</Label>
             <Textarea id="d" required rows={6} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder="Describe the problem, why it matters, and any improvement idea you have…" />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label>Department</Label>
               <Select value={f.department} onValueChange={(v) => setF({ ...f, department: v })}>
@@ -117,7 +117,7 @@ function Submit() {
           </Button>
         </form>
 
-        <div className="space-y-4 lg:col-span-2">
+        <div className="space-y-3 lg:col-span-2">
           {busy && (
             <div className="card-surface p-5">
               <div className="eyebrow mb-3">AI processing</div>
