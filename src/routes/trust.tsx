@@ -29,6 +29,10 @@ const PRINCIPLES = [
   { t: "Auditability", d: "Every processing step is logged and reviewable.", i: ClipboardList },
 ];
 
+const GOV = [
+  "Generated recommendations are advisory", "Human approval before action", "Source suggestions remain traceable",
+  "Sensitive content sanitized before AI processing", "Untrusted user text separated from system instructions", "AI output can be rejected or corrected by experts",
+];
 const LOG = [
   ["2026-08-28 14:02:11", "pii.redact", "CTL-03", "SUG-1041", "Sanitized"],
   ["2026-08-28 13:47:55", "injection.screen", "CTL-04", "SUG-1040", "Flagged"],
@@ -130,6 +134,16 @@ function Trust() {
           </div>
         ))}
       </div>
+      <Section title="AI Output Governance" description="Rules applied to every generated recommendation" className="mt-3">
+        <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {GOV.map((g, i) => (
+            <div key={g} className="flex items-center gap-2.5 rounded-sm border bg-muted/30 px-3 py-2 text-[13px]">
+              <span className="font-mono text-[10px] text-muted-foreground">GOV-{String(i + 1).padStart(2, "0")}</span>{g}
+              <CheckCircle2 className="ml-auto size-3.5 shrink-0 text-success" />
+            </div>
+          ))}
+        </div>
+      </Section>
       <Section title="Processing audit log" description="Most recent guard events · synthetic" className="mt-3">
         <div className="-m-4 overflow-x-auto">
           <Table>

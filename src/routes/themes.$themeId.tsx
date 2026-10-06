@@ -40,11 +40,11 @@ function ThemeNotFound() {
   );
 }
 
-const STATUS_LABEL: Record<ProposalStatus, { text: string; tone: string }> = {
-  open: { text: "Awaiting decision", tone: "Low" },
-  review: { text: "Expert review requested", tone: "Required" },
-  investigation: { text: "Marked for investigation", tone: "Passed" },
-  dismissed: { text: "Dismissed", tone: "Flagged" },
+const STATUS_LABEL: Record<ProposalStatus, { text: string }> = {
+  open: { text: "Awaiting decision" },
+  review: { text: "Expert review requested" },
+  investigation: { text: "Marked for investigation" },
+  dismissed: { text: "Dismissed" },
 };
 
 function Tag({ children, tone = "bg-secondary text-secondary-foreground" }: { children: React.ReactNode; tone?: string }) {
@@ -94,7 +94,6 @@ function ThemeDetail() {
         </div>
         <div className="text-right">
           <div className="eyebrow mb-1">Decision status</div>
-          <Pill value={STATUS_LABEL[status].tone} className="hidden" />
           <span className="text-xs font-medium">{STATUS_LABEL[status].text}</span>
         </div>
       </div>

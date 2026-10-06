@@ -20,8 +20,14 @@ const TECH = [
 ];
 const FUTURE = [
   "Real sentence-transformer embedding service", "Persistent vector search", "Automatic cluster evolution",
-  "Multilingual German/English suggestions", "Access-control roles", "Local enterprise LLM",
+  "Multilingual Employee Input — English / German semantic analysis", "Access-control roles", "Local enterprise LLM",
   "Feedback-based ranking", "Clustering evaluation metrics", "Human expert validation", "Integration with existing intranet systems",
+];
+
+const NEXT = [
+  "Real multilingual sentence embeddings", "Vector similarity / semantic search", "Dynamic clustering of new employee ideas",
+  "Cluster-level LLM summarization", "Trend change detection", "Human feedback loop", "Privacy-aware enterprise LLM integration",
+  "Evaluation metrics for clustering and generated recommendations", "Role-based access control", "Intranet integration",
 ];
 
 function About() {
@@ -60,6 +66,14 @@ function About() {
           </div>
         ))}
       </div>
+      <p className="mt-2 text-xs text-muted-foreground">An enterprise deployment should support multilingual employee suggestions while grouping semantically equivalent German and English ideas into the same themes.</p>
+
+      <Section title="What I Would Develop Next" className="mt-4">
+        <ol className="grid gap-x-6 gap-y-1.5 text-[13px] sm:grid-cols-2">
+          {NEXT.map((n, i) => <li key={n} className="flex gap-2"><span className="w-5 font-mono text-[11px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>{n}</li>)}
+        </ol>
+        <p className="mt-3 border-t pt-3 text-[13px] text-muted-foreground">The prototype demonstrates the product concept. The next engineering step is replacing deterministic demo behavior with evaluated semantic models, controlled LLM processing, persistent data infrastructure, and measurable quality metrics.</p>
+      </Section>
       <div className="mt-4 space-y-1 rounded-md border bg-card p-4 text-xs text-muted-foreground">
         <p><strong className="text-foreground">Independent Prototype · Synthetic Demo Data.</strong> Not an official GFE application; no real employee or internal data is used.</p>
         <p>Public research alignment examples are illustrative and based only on publicly available themes.</p>

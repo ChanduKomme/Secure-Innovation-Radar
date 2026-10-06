@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Info } from "lucide-react";
+import { Search, Info, ArrowRight } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +11,13 @@ import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
 
+const ARCH = [
+  { t: "Employee Suggestion", d: "" },
+  { t: "Sentence Embedding", d: "Planned production implementation: multilingual sentence-transformer or enterprise embedding model." },
+  { t: "Vector Similarity", d: "" },
+  { t: "Top Related Suggestions", d: "" },
+  { t: "Theme Assignment", d: "" },
+];
 const DEFAULT = "Use acoustic signals to detect cutting-tool wear before quality decreases.";
 
 export const Route = createFileRoute("/similar")({
@@ -83,7 +91,22 @@ function Similar() {
             })}
             {results.length === 0 && <div className="card-surface p-8 text-center text-sm text-muted-foreground">No conceptually similar suggestions found. Try describing the underlying problem.</div>}
           </div>
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Info className="size-3.5" /> Semantic similarity compares meaning, not only exact keywords.</p>
+          <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Info className="size-3.5" /> Semantic similarity compares meaning, not only exact keywords. Scores shown are demonstration values (demo mode).</p>
+          <div className="card-surface p-4">
+            <div className="mb-3 flex items-center justify-between"><span className="text-[13px] font-semibold">Architecture Preview</span><span className="eyebrow">planned production pipeline</span></div>
+            <div className="grid gap-2 sm:grid-cols-5">
+              {ARCH.map((a, i) => (
+                <div key={a.t} className="relative flex flex-col">
+                  <div className={`flex-1 rounded-sm border px-2.5 py-2 ${i === 1 ? "border-primary bg-primary-soft" : "bg-muted/40"}`}>
+                    <div className="font-mono text-[10px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</div>
+                    <div className={`text-xs font-medium ${i === 1 ? "text-primary" : ""}`}>{a.t}</div>
+                    {a.d && <div className="mt-1 text-[11px] leading-snug text-muted-foreground">{a.d}</div>}
+                  </div>
+                  {i < ARCH.length - 1 && <ArrowRight className="absolute -right-2 top-3 z-10 hidden size-3.5 rounded-full bg-card text-muted-foreground sm:block" />}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <aside className="card-surface h-fit p-5 lg:sticky lg:top-20">
@@ -92,7 +115,9 @@ function Similar() {
             Ten differently worded employee suggestions may represent one underlying business problem. Semantic grouping reduces duplicate review work and highlights recurring issues.
           </p>
           <div className="mt-4 space-y-2 border-t pt-4 text-xs text-muted-foreground">
-            <div className="flex justify-between"><span>Method</span><span className="font-mono">cosine similarity</span></div>
+            <div className="flex justify-between"><span>Method</span>
+              <TooltipProvider><Tooltip><TooltipTrigger className="inline-flex items-center gap-1 font-mono underline decoration-dotted underline-offset-2">cosine similarity <Info className="size-3" /></TooltipTrigger>
+                <TooltipContent className="max-w-60 text-xs">Prototype similarity scores are demonstration values. Production implementation would use sentence embeddings and vector similarity.</TooltipContent></Tooltip></TooltipProvider></div>
             <div className="flex justify-between"><span>Corpus</span><span className="font-mono">{suggestions.length} ideas</span></div>
             <div className="flex justify-between"><span>Engine</span><span className="font-mono">demo mode</span></div>
           </div>

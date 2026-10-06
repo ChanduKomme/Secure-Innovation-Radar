@@ -76,7 +76,8 @@ function Overview() {
           </div>
         </Section>
 
-        <Section title="Emerging Opportunities" description="Fastest-growing semantic clusters" className="xl:col-span-2">
+        <div className="flex flex-col gap-3 xl:col-span-2">
+        <Section title="Emerging Opportunities" description="Fastest-growing semantic clusters">
           <ul className="-my-1 divide-y">
             {THEMES.slice(0, 4).map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2.5">
@@ -94,6 +95,16 @@ function Overview() {
             ))}
           </ul>
         </Section>
+        <div className="card-surface border-l-2 border-l-primary p-4">
+          <div className="flex items-center justify-between gap-2">
+            <span className="eyebrow">AI Management Brief</span>
+            <span className="text-[10px] text-muted-foreground">Generated from synthetic demonstration data</span>
+          </div>
+          <p className="mt-1.5 text-[13px] leading-relaxed">
+            Three themes currently combine high recurrence with high estimated impact: Predictive Maintenance, AI Quality Inspection and Energy Efficiency. Predictive Maintenance is growing fastest (+32%) and should be prioritized for expert investigation.
+          </p>
+        </div>
+        </div>
       </div>
 
       <Section

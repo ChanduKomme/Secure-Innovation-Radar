@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
           <main className="mx-auto w-full max-w-[1440px] flex-1 p-3 md:p-5">{children}</main>
-          <footer className="border-t px-6 py-3 text-[11px] text-muted-foreground">
+          <footer className="shrink-0 border-t bg-card px-3 py-2.5 text-xs text-muted-foreground md:px-5">
             Independent prototype using synthetic data only. Not affiliated with or commissioned by GFE.
           </footer>
         </div>
