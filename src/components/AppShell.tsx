@@ -6,7 +6,7 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { semanticApiConfigured } from "@/lib/semantic-api";
+import { semanticEngineMode } from "@/lib/semantic-api";
 
 const NAV = [
   { title: "Overview", url: "/", icon: LayoutGrid },
@@ -51,14 +51,14 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="px-3 pb-3 text-[11px] text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
-        v0.5 · Independent Prototype
+        v0.6 · Independent Prototype
       </SidebarFooter>
     </Sidebar>
   );
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const liveConfigured = semanticApiConfigured();
+  const mode = semanticEngineMode();
 
   return (
     <SidebarProvider>
@@ -73,8 +73,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <div className="ml-auto flex items-center gap-4">
               <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
-                <span className={`size-1.5 rounded-full ${liveConfigured ? "bg-success" : "bg-warning"}`} />
-                {liveConfigured ? "Semantic Engine: Configured" : "Semantic Engine: Demo Fallback"}
+                <span className="size-1.5 rounded-full bg-success" />
+                {mode === "remote" ? "Semantic Engine: Live API" : "Semantic Engine: Live Browser"}
               </span>
               <Button size="sm" asChild>
                 <Link to="/submit"><Plus /><span className="hidden sm:inline">Submit Idea</span></Link>
