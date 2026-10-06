@@ -38,6 +38,7 @@ export interface Theme {
   representative: string[];
   research: string[];
   icon: string;
+  departments?: number;
 }
 
 export const DEPARTMENTS = [
@@ -85,6 +86,7 @@ export const THEMES: Theme[] = [
     ],
     research: ["AI-based process monitoring", "Sensor analysis", "Anomaly detection", "Digital production"],
     icon: "Wrench",
+    departments: 5,
   },
   {
     id: "quality-inspection",
