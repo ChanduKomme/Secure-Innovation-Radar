@@ -21,7 +21,7 @@ export const Route = createFileRoute("/submit")({
   component: Submit,
 });
 
-const STEPS = ["Validating input", "Scanning for personal data", "Screening for prompt injection", "Computing semantic representation", "Matching recurring themes"];
+const STEPS = ["Privacy screening", "Prompt safety screening", "Semantic analysis", "Similarity search", "Theme assignment", "Priority calculation"];
 
 function Submit() {
   const { suggestions, add } = useStore();
@@ -138,12 +138,12 @@ function Submit() {
               </div>
               <dl className="divide-y text-sm">
                 {[
-                  ["Semantic Theme", <span className="font-medium">{result.theme.name}</span>],
+                  ["Theme", <span className="font-medium">{result.theme.name}</span>],
                   ["Confidence", <span className="font-mono">{result.confidence}%</span>],
                   ["Related Suggestions", <span className="font-mono">{result.related.length}</span>],
-                  ["Privacy Check", <Pill value={result.priv.fields.length ? "Sanitized" : "Passed"} />],
+                  ["Privacy", <Pill value={result.priv.fields.length ? "Sanitized" : "Passed"} />],
                   ["Prompt Safety", <Pill value={result.priv.injection ? "Flagged" : "Passed"} />],
-                  ["Priority Score", <span className="font-mono font-semibold">{result.priority}/100</span>],
+                  ["Priority", <span className="font-mono font-semibold">{result.priority}/100</span>],
                 ].map(([k, v]) => (
                   <div key={k as string} className="flex items-center justify-between px-5 py-2.5">
                     <dt className="text-muted-foreground">{k}</dt><dd>{v}</dd>
@@ -162,8 +162,8 @@ function Submit() {
               )}
               <div className="flex flex-wrap gap-2 border-t p-4">
                 <Button size="sm" asChild><Link to="/similar" search={{ q: `${f.title}. ${f.description}` }}>View Similar Ideas</Link></Button>
-                <Button size="sm" variant="outline" asChild><Link to="/themes/$themeId" params={{ themeId: result.theme.id }}>Open Theme</Link></Button>
-                <Button size="sm" variant="ghost" onClick={reset}>Submit Another</Button>
+                <Button size="sm" variant="outline" asChild><Link to="/themes/$themeId" params={{ themeId: result.theme.id }}>Open Theme Intelligence</Link></Button>
+                <Button size="sm" variant="ghost" onClick={reset}>Submit Another Idea</Button>
               </div>
             </div>
           )}

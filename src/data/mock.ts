@@ -38,6 +38,7 @@ export interface Theme {
   representative: string[];
   research: string[];
   icon: string;
+  departments?: number;
 }
 
 export const DEPARTMENTS = [
@@ -70,9 +71,9 @@ export const THEMES: Theme[] = [
     impact_label: "High",
     priority: "High",
     status: "Emerging",
-    keywords: ["tool wear", "acoustic signals", "vibration", "machine condition", "sensor monitoring", "predictive maintenance", "quality degradation"],
+    keywords: ["Tool Wear", "Acoustic Signals", "Vibration", "Sensor Data", "Machine Condition", "Predictive Maintenance", "Quality Degradation"],
     summary:
-      "Multiple employee suggestions indicate that tool degradation and machine-state problems are often detected only after production quality begins to decline. Several suggestions propose earlier detection using acoustic, vibration, force, or process data.",
+      "Multiple employee suggestions indicate that tool degradation and machine-state problems are often detected only after production quality begins to decline. Several employees independently propose earlier detection using acoustic, vibration, force, or process data.",
     recommended_action: "Investigate",
     investigation:
       "Evaluate whether existing process or sensor streams can support anomaly detection for early tool degradation.",
@@ -80,10 +81,12 @@ export const THEMES: Theme[] = [
       "Detect cutting-tool wear using acoustic measurements",
       "Predict tool replacement earlier",
       "Monitor vibration trends during production",
-      "Recognize quality degradation before failure",
+      "Detect machining-quality degradation before final inspection",
+      "Use production signals for predictive maintenance",
     ],
     research: ["AI-based process monitoring", "Sensor analysis", "Anomaly detection", "Digital production"],
     icon: "Wrench",
+    departments: 5,
   },
   {
     id: "quality-inspection",
