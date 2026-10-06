@@ -75,7 +75,7 @@ function Trust() {
               <div>
                 <div className="eyebrow mb-1.5">Detected fields</div>
                 <ul className="space-y-1 font-mono text-xs">
-                  {p.fields.map((f, i) => <li key={i}><span className="text-destructive">{f.type}</span>: {f.value}</li>)}
+                  {p.fields.map((f, i) => <li key={i}><span className="text-destructive">{f.type}</span> — {f.value}</li>)}
                   {!p.fields.length && <li className="text-muted-foreground">none</li>}
                 </ul>
               </div>
@@ -95,6 +95,7 @@ function Trust() {
                 <div className="rounded-md border border-destructive/30 bg-destructive-soft p-3">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-destructive"><AlertTriangle className="size-4" /> Detected</div>
                   <p className="mt-1 text-sm">Potential instruction override attempt</p>
+                  <p className="mt-2 border-t border-destructive/20 pt-2 text-xs"><span className="font-semibold">Action:</span> Block privileged behavior and flag for human review.</p>
                 </div>
                 <div>
                   <div className="eyebrow mb-1.5">Action</div>
