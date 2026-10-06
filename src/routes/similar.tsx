@@ -13,7 +13,7 @@ import { meta } from "@/lib/meta";
 const DEFAULT = "Use acoustic signals to detect cutting-tool wear before quality decreases.";
 
 export const Route = createFileRoute("/similar")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? (s["q"] as string) : undefined }),
   head: () => meta("Similar Ideas", "Semantic similarity explorer for duplicate and related employee suggestions."),
   component: Similar,
 });
@@ -40,7 +40,7 @@ function Similar() {
             <Textarea rows={2} value={input} onChange={(e) => setInput(e.target.value)} className="resize-none" />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
               <Select value={dept} onValueChange={setDept}>
-                <SelectTrigger size="sm" className="w-44"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-8 w-44"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All departments</SelectItem>
                   {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}

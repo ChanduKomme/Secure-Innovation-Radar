@@ -17,7 +17,7 @@ const axis = { fontSize: 11, fill: "var(--muted-foreground)" };
 
 function Tip({ active, payload }: { active?: boolean; payload?: { payload: Theme }[] }) {
   if (!active || !payload?.length) return null;
-  const t = payload[0].payload;
+  const t = payload[0]!.payload;
   return (
     <div className="card-surface w-56 p-3 text-xs">
       <div className="mb-2 text-sm font-semibold">{t.name}</div>

@@ -305,7 +305,7 @@ export const SUGGESTIONS: Suggestion[] = SEEDS.map((s, i) => {
     title: s[0],
     description: s[1],
     department: s[2],
-    category: CATEGORIES[i % CATEGORIES.length],
+    category: CATEGORIES[i % CATEGORIES.length]!,
     impact: s[3],
     urgency: s[4],
     anonymous: i % 3 === 0,

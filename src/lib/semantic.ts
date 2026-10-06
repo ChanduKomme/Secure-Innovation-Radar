@@ -53,7 +53,7 @@ export function findSimilar(query: string, pool: Suggestion[], limit = 5): Simil
 
 export function classifyTheme(text: string): { theme: Theme; confidence: number } {
   const q = tokens(text);
-  let best = THEMES[0], bestScore = -1;
+  let best: Theme = THEMES[0]!, bestScore = -1;
   for (const t of THEMES) {
     const s = cosine(q, tokens(`${t.name} ${t.description} ${t.keywords.join(" ")} ${t.representative.join(" ")}`));
     if (s > bestScore) { best = t; bestScore = s; }

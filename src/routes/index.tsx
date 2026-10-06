@@ -105,14 +105,14 @@ function Overview() {
           <div className="flex flex-wrap gap-2">
             <Input placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} className="h-8 w-44" />
             <Select value={dept} onValueChange={setDept}>
-              <SelectTrigger size="sm" className="w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All departments</SelectItem>
                 {DEPARTMENTS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={impact} onValueChange={setImpact}>
-              <SelectTrigger size="sm" className="w-32"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All impact</SelectItem>
                 {["High", "Medium", "Low"].map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
