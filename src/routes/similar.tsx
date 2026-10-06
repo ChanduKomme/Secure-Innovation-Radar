@@ -34,8 +34,8 @@ function Similar() {
   return (
     <>
       <PageHeader title="Semantic Similarity Explorer" subtitle="Find duplicate, related, and conceptually similar employee suggestions." />
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
+      <div className="grid gap-3 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
           <form className="card-surface p-4" onSubmit={(e) => { e.preventDefault(); setQuery(input); }}>
             <Textarea rows={2} value={input} onChange={(e) => setInput(e.target.value)} className="resize-none" />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">

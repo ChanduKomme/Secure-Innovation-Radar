@@ -52,13 +52,13 @@ function Trust() {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <div className="space-y-4 lg:col-span-2">
+      <div className="mt-3 grid gap-3 lg:grid-cols-3">
+        <div className="space-y-3 lg:col-span-2">
           <Section title="Privacy Guard Example" description="Edit the input to test live detection"
             actions={<Pill value={p.fields.length ? "Sanitized" : "Passed"} />}>
             <div className="eyebrow mb-1.5">Original employee input</div>
             <Textarea rows={2} value={pii} onChange={(e) => setPii(e.target.value)} className="resize-none" />
-            <div className="mt-4 grid gap-4 sm:grid-cols-[180px_1fr]">
+            <div className="mt-3 grid gap-3 sm:grid-cols-[180px_1fr]">
               <div>
                 <div className="eyebrow mb-1.5">Detected fields</div>
                 <ul className="space-y-1 font-mono text-xs">
@@ -78,7 +78,7 @@ function Trust() {
             <div className="eyebrow mb-1.5">Example input</div>
             <Textarea rows={2} value={inj} onChange={(e) => setInj(e.target.value)} className="resize-none font-mono text-xs" />
             {j.injection ? (
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-md border border-destructive/30 bg-destructive-soft p-3">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-destructive"><AlertTriangle className="size-4" /> Detected</div>
                   <p className="mt-1 text-sm">Potential instruction override attempt</p>

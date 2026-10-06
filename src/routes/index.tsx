@@ -45,7 +45,7 @@ function Overview() {
     <>
       <PageHeader title="Overview" subtitle="Employee suggestion intelligence · reporting period Jan – Aug 2026" />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {KPIS.map((k) => (
           <div key={k.label} className="card-surface p-4">
             <div className="flex items-center justify-between">
@@ -58,7 +58,7 @@ function Overview() {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-5">
+      <div className="mt-3 grid gap-3 xl:grid-cols-5">
         <Section title="Innovation Activity" description="Monthly volume of new suggestions and detected recurring themes" className="xl:col-span-3">
           <div className="h-80 w-full">
             <ResponsiveContainer>
@@ -99,7 +99,7 @@ function Overview() {
       <Section
         title="Recent Suggestions"
         description={`${suggestions.length} suggestions in demo dataset`}
-        className="mt-4"
+        className="mt-3"
         actions={
           <div className="flex flex-wrap gap-2">
             <Input placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} className="h-8 w-44" />
@@ -120,17 +120,17 @@ function Overview() {
           </div>
         }
       >
-        <div className="-m-5 overflow-x-auto">
+        <div className="-m-4 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="text-xs">
-                <TableHead className="pl-5"><button className="inline-flex items-center gap-1" onClick={() => setSortKey("created_at")}>Date <ArrowUpDown className="size-3" /></button></TableHead>
+                <TableHead className="pl-4"><button className="inline-flex items-center gap-1" onClick={() => setSortKey("created_at")}>Date <ArrowUpDown className="size-3" /></button></TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Department</TableHead>
                 <TableHead>Theme</TableHead>
                 <TableHead>Similarity Group</TableHead>
                 <TableHead>Privacy Status</TableHead>
-                <TableHead className="pr-5"><button className="inline-flex items-center gap-1" onClick={() => setSortKey("priority_score")}>Impact <ArrowUpDown className="size-3" /></button></TableHead>
+                <TableHead className="pr-4"><button className="inline-flex items-center gap-1" onClick={() => setSortKey("priority_score")}>Impact <ArrowUpDown className="size-3" /></button></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -138,13 +138,13 @@ function Overview() {
                 const t = themeById(s.theme)!;
                 return (
                   <TableRow key={s.id} className="text-sm">
-                    <TableCell className="pl-5 font-mono text-xs text-muted-foreground">{s.created_at}</TableCell>
+                    <TableCell className="pl-4 font-mono text-xs text-muted-foreground">{s.created_at}</TableCell>
                     <TableCell className="max-w-72 truncate font-medium">{s.title}</TableCell>
                     <TableCell className="text-muted-foreground">{s.department}</TableCell>
                     <TableCell><Link to="/themes/$themeId" params={{ themeId: t.id }} className="text-primary hover:underline">{t.short}</Link></TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">SG-{t.id.slice(0, 3).toUpperCase()}-{THEMES.indexOf(t) + 1}</TableCell>
                     <TableCell><Pill value={s.privacy_status} /></TableCell>
-                    <TableCell className="pr-5"><Pill value={s.impact} /></TableCell>
+                    <TableCell className="pr-4"><Pill value={s.impact} /></TableCell>
                   </TableRow>
                 );
               })}

@@ -41,7 +41,7 @@ function RadarPage() {
   return (
     <>
       <PageHeader title="Innovation Radar" subtitle="See which employee-reported problems combine high recurrence with high potential impact." />
-      <div className="grid gap-4 xl:grid-cols-4">
+      <div className="grid gap-3 xl:grid-cols-4">
         <Section title="Opportunity map" description="Bubble size = number of related suggestions" className="xl:col-span-3"
           actions={<div className="flex gap-3 text-[11px] text-muted-foreground">{Object.entries(COLOR).map(([k, c]) => <span key={k} className="flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: c }} />{k} priority</span>)}</div>}>
           <div className="h-[460px]">
@@ -75,26 +75,26 @@ function RadarPage() {
         </div>
       </div>
 
-      <Section title="Top Opportunities" className="mt-4">
-        <div className="-m-5 overflow-x-auto">
+      <Section title="Top Opportunities" className="mt-3">
+        <div className="-m-4 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="text-xs">
-                <TableHead className="pl-5"><H k="rank">Rank</H></TableHead><TableHead>Theme</TableHead>
+                <TableHead className="pl-4"><H k="rank">Rank</H></TableHead><TableHead>Theme</TableHead>
                 <TableHead><H k="suggestion_count">Frequency</H></TableHead><TableHead><H k="impact_score">Impact</H></TableHead>
-                <TableHead><H k="trend_percentage">Trend</H></TableHead><TableHead>Priority</TableHead><TableHead className="pr-5">Recommended Action</TableHead>
+                <TableHead><H k="trend_percentage">Trend</H></TableHead><TableHead>Priority</TableHead><TableHead className="pr-4">Recommended Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.map((t) => (
                 <TableRow key={t.id} className="text-sm">
-                  <TableCell className="pl-5 font-mono text-muted-foreground">{ranked.indexOf(t) + 1}</TableCell>
+                  <TableCell className="pl-4 font-mono text-muted-foreground">{ranked.indexOf(t) + 1}</TableCell>
                   <TableCell><Link to="/themes/$themeId" params={{ themeId: t.id }} className="font-medium hover:text-primary">{t.short}</Link></TableCell>
                   <TableCell className="font-mono">{t.suggestion_count}</TableCell>
                   <TableCell>{t.impact_label}</TableCell>
                   <TableCell><Trend v={t.trend_percentage} /></TableCell>
                   <TableCell><Pill value={t.priority} /></TableCell>
-                  <TableCell className="pr-5 font-medium">{t.recommended_action}</TableCell>
+                  <TableCell className="pr-4 font-medium">{t.recommended_action}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
