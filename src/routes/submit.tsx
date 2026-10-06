@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CATEGORIES, DEPARTMENTS, type Level, type Suggestion, type Theme } from "@/data/mock";
 import { classifyTheme, findSimilar, privacyScan } from "@/lib/semantic";
-import { analyzeSemantic, semanticApiConfigured, type LiveRelatedResult } from "@/lib/semantic-api";
+import { analyzeSemantic, semanticEngineMode, type LiveRelatedResult } from "@/lib/semantic-api";
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
@@ -54,28 +54,21 @@ function Submit() {
     let engine: "live" | "fallback" = "fallback";
     let model: string | undefined;
 
-    if (semanticApiConfigured()) {
-      try {
-        const live = await analyzeSemantic(priv.sanitized, suggestions, 3);
-        theme = live.theme;
-        confidence = live.confidence;
-        related = live.related;
-        engine = "live";
-        model = live.model;
-        setSemanticWarning(null);
-      } catch (error) {
-        console.warn("Live semantic API unavailable; using deterministic fallback", error);
-        const local = classifyTheme(priv.sanitized);
-        theme = local.theme;
-        confidence = local.confidence;
-        related = findSimilar(priv.sanitized, suggestions, 3);
-        setSemanticWarning("Live semantic service was unavailable, so this result used the local demo fallback.");
-      }
-    } else {
+    try {
+      const live = await analyzeSemantic(priv.sanitized, suggestions, 3);
+      theme = live.theme;
+      confidence = live.confidence;
+      related = live.related;
+      engine = "live";
+      model = live.model;
+      setSemanticWarning(null);
+    } catch (error) {
+      console.warn("Real semantic engine unavailable; using deterministic fallback", error);
       const local = classifyTheme(priv.sanitized);
       theme = local.theme;
       confidence = local.confidence;
       related = findSimilar(priv.sanitized, suggestions, 3);
+      setSemanticWarning("The real semantic engine could not load, so this result used the deterministic demo fallback.");
     }
 
     const pts = (f.impact === "High" ? 40 : f.impact === "Medium" ? 25 : 10)
@@ -123,6 +116,7 @@ function Submit() {
     setF({ ...f, title: "", description: "", ack: false });
   };
   const busy = step >= 0;
+  const mode = semanticEngineMode();
 
   return (
     <>
@@ -212,7 +206,7 @@ function Submit() {
                 ))}
               </dl>
               {result.model && <div className="border-t px-5 py-2 text-[10px] text-muted-foreground">Model: <span className="font-mono">{result.model}</span></div>}
-              {semanticWarning && <div className="border-t bg-warning/10 px-5 py-2 text-xs text-warning-foreground">{semanticWarning}</div>}
+              {semanticWarning && <div className="border-t bg-warning/10 px-5 py-2 text-xs text-muted-foreground">{semanticWarning}</div>}
               {result.related.length > 0 && (
                 <ul className="border-t bg-muted/40 px-5 py-3 text-xs">
                   {result.related.map((r) => (
@@ -233,9 +227,9 @@ function Submit() {
           {!busy && !result && (
             <div className="card-surface p-5 text-sm text-muted-foreground">
               <Sparkles className="mb-2 size-5 text-primary" />
-              {semanticApiConfigured()
-                ? "The configured semantic backend uses multilingual sentence embeddings for live similarity and theme assignment. Privacy and prompt-safety checks run before semantic processing."
-                : "The app is currently using its deterministic demo fallback. Configure VITE_SEMANTIC_API_URL to activate the live multilingual sentence-embedding service."}
+              {mode === "remote"
+                ? "The configured FastAPI service calculates live multilingual sentence embeddings for similarity and theme assignment."
+                : "The published demo calculates real multilingual sentence embeddings directly in the browser. The first analysis may take longer while the quantized model is downloaded and cached."}
             </div>
           )}
           <Collapsible className="card-surface">
