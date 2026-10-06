@@ -100,12 +100,12 @@ function Similar() {
                   <div className={`flex-1 rounded-sm border px-2.5 py-2 ${i === 1 ? "border-primary bg-primary-soft" : "bg-muted/40"}`}>
                     <div className="font-mono text-[10px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</div>
                     <div className={`text-xs font-medium ${i === 1 ? "text-primary" : ""}`}>{a.t}</div>
-                    {a.d && <div className="mt-1 text-[11px] leading-snug text-muted-foreground">{a.d}</div>}
                   </div>
                   {i < ARCH.length - 1 && <ArrowRight className="absolute -right-2 top-3 z-10 hidden size-3.5 rounded-full bg-card text-muted-foreground sm:block" />}
                 </div>
               ))}
             </div>
+            <p className="mt-2 text-[11px] text-muted-foreground"><span className="font-medium text-primary">02 Sentence Embedding:</span> {ARCH[1]!.d}</p>
           </div>
         </div>
 
