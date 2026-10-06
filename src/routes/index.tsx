@@ -47,12 +47,12 @@ function Overview() {
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {KPIS.map((k) => (
-          <div key={k.label} className="card-surface p-4">
+          <div key={k.label} className="card-surface p-3.5">
             <div className="flex items-center justify-between">
               <span className="eyebrow">{k.label}</span>
               <k.icon className="size-4 text-muted-foreground" />
             </div>
-            <div className="mt-2 text-3xl font-semibold tabular-nums tracking-tight">{k.value}</div>
+            <div className="mt-1.5 font-mono text-2xl font-semibold tabular-nums tracking-tight">{k.value}</div>
             <div className="mt-1 text-xs text-muted-foreground">{k.caption}</div>
           </div>
         ))}
@@ -60,7 +60,7 @@ function Overview() {
 
       <div className="mt-3 grid gap-3 xl:grid-cols-5">
         <Section title="Innovation Activity" description="Monthly volume of new suggestions and detected recurring themes" className="xl:col-span-3">
-          <div className="h-80 w-full">
+          <div className="h-full min-h-64 w-full">
             <ResponsiveContainer>
               <LineChart data={ACTIVITY} margin={{ left: -20, right: 8, top: 4 }}>
                 <CartesianGrid stroke="var(--border)" vertical={false} />
@@ -77,18 +77,18 @@ function Overview() {
         </Section>
 
         <Section title="Emerging Opportunities" description="Fastest-growing semantic clusters" className="xl:col-span-2">
-          <ul className="-my-2 divide-y">
+          <ul className="-my-1 divide-y">
             {THEMES.slice(0, 4).map((t) => (
-              <li key={t.id} className="flex items-center gap-3 py-3">
+              <li key={t.id} className="flex items-center gap-3 py-2.5">
                 <ThemeIcon name={t.icon} />
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium">{t.short}</div>
+                  <div className="truncate text-[13px] font-medium">{t.short}</div>
                   <div className="mt-0.5 flex items-center gap-2 whitespace-nowrap text-xs text-muted-foreground">
-                    <span>{t.suggestion_count} ideas</span><Trend v={t.trend_percentage} /><Pill value={t.priority} />
+                    <span><span className="font-mono">{t.suggestion_count}</span> ideas</span><Trend v={t.trend_percentage} /><Pill value={t.priority} /><Pill value={t.status} />
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/themes/$themeId" params={{ themeId: t.id }}>View Theme <ArrowUpRight /></Link>
+                  <Link to="/themes/$themeId" params={{ themeId: t.id }}><span className="hidden sm:inline">View Theme</span> <ArrowUpRight /></Link>
                 </Button>
               </li>
             ))}
@@ -102,7 +102,7 @@ function Overview() {
         className="mt-3"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Input placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} className="h-8 w-44" />
+            <Input placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} className="h-8 w-full sm:w-44" />
             <Select value={dept} onValueChange={setDept}>
               <SelectTrigger className="h-8 w-40"><SelectValue>{dept === "all" ? "All departments" : dept}</SelectValue></SelectTrigger>
               <SelectContent>
@@ -138,10 +138,10 @@ function Overview() {
                 const t = themeById(s.theme)!;
                 return (
                   <TableRow key={s.id} className="text-sm">
-                    <TableCell className="pl-4 font-mono text-xs text-muted-foreground">{s.created_at}</TableCell>
+                    <TableCell className="whitespace-nowrap pl-4 font-mono text-xs text-muted-foreground">{s.created_at}</TableCell>
                     <TableCell className="max-w-72 truncate font-medium">{s.title}</TableCell>
-                    <TableCell className="text-muted-foreground">{s.department}</TableCell>
-                    <TableCell><Link to="/themes/$themeId" params={{ themeId: t.id }} className="text-primary hover:underline">{t.short}</Link></TableCell>
+                    <TableCell className="whitespace-nowrap text-muted-foreground">{s.department}</TableCell>
+                    <TableCell><Link to="/themes/$themeId" params={{ themeId: t.id }} className="whitespace-nowrap text-primary hover:underline">{t.short}</Link></TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">SG-{t.id.slice(0, 3).toUpperCase()}-{THEMES.indexOf(t) + 1}</TableCell>
                     <TableCell><Pill value={s.privacy_status} /></TableCell>
                     <TableCell className="pr-4"><Pill value={s.impact} /></TableCell>

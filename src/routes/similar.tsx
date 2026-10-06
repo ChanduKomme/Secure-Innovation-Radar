@@ -50,7 +50,7 @@ function Similar() {
             </div>
           </form>
 
-          <div className="card-surface grid grid-cols-3 divide-x">
+          <div className="card-surface grid divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <div className="p-4"><div className="eyebrow">Detected Theme</div><Link to="/themes/$themeId" params={{ themeId: theme.id }} className="mt-1 block text-sm font-semibold text-primary hover:underline">{theme.name}</Link></div>
             <div className="p-4"><div className="eyebrow">Confidence</div><div className="mt-1 font-mono text-lg font-semibold">{confidence}%</div></div>
             <div className="p-4"><div className="eyebrow">Related Suggestions</div><div className="mt-1 font-mono text-lg font-semibold">{results.length}</div></div>
