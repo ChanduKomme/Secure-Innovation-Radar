@@ -29,13 +29,15 @@ export function semanticApiConfigured() {
   return Boolean(baseUrl);
 }
 
-export async function analyzeSemantic(
+export function semanticEngineMode(): "remote" | "browser" {
+  return baseUrl ? "remote" : "browser";
+}
+
+async function analyzeViaRemoteApi(
   query: string,
   suggestions: Suggestion[],
-  limit = 6,
+  limit: number,
 ): Promise<LiveSemanticResult> {
-  if (!baseUrl) throw new Error("VITE_SEMANTIC_API_URL is not configured");
-
   const response = await fetch(`${baseUrl}/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -72,4 +74,18 @@ export async function analyzeSemantic(
       .map((r) => ({ suggestion: byId.get(r.suggestion_id), score: r.score }))
       .filter((r): r is LiveRelatedResult => Boolean(r.suggestion)),
   };
+}
+
+export async function analyzeSemantic(
+  query: string,
+  suggestions: Suggestion[],
+  limit = 6,
+): Promise<LiveSemanticResult> {
+  if (baseUrl) return analyzeViaRemoteApi(query, suggestions, limit);
+
+  // The published demo does not require a separate backend. It loads a quantized
+  // multilingual SentenceTransformer-compatible ONNX model directly in the browser.
+  // This keeps the public prototype self-contained while still producing real embeddings.
+  const { analyzeSemanticInBrowser } = await import("@/lib/browser-semantic");
+  return analyzeSemanticInBrowser(query, suggestions, limit);
 }
