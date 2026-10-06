@@ -46,7 +46,7 @@ function RadarPage() {
           actions={<div className="flex gap-3 text-[11px] text-muted-foreground">{Object.entries(COLOR).map(([k, c]) => <span key={k} className="flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: c }} />{k} priority</span>)}</div>}>
           <div className="h-[460px]">
             <ResponsiveContainer>
-              <ScatterChart margin={{ top: 16, right: 24, bottom: 24, left: 4 }}>
+              <ScatterChart margin={{ top: 36, right: 24, bottom: 24, left: 4 }}>
                 <ReferenceArea x1={50} x2={100} y1={50} y2={100} fill="var(--primary)" fillOpacity={0.05} stroke="var(--primary)" strokeOpacity={0.25} strokeDasharray="4 4"
                   label={{ value: "Priority review zone", position: "insideBottomRight", fontSize: 11, fill: "var(--primary)" }} />
                 <CartesianGrid stroke="var(--border)" />
