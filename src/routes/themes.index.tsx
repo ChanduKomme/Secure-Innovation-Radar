@@ -3,7 +3,8 @@ import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { THEMES } from "@/data/mock";
+import { SUGGESTIONS, THEMES } from "@/data/mock";
+const SEED_IDS = new Set(SUGGESTIONS.map((s) => s.id));
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill, ThemeIcon, Trend } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/themes/")({
 function Themes() {
   const { suggestions } = useStore();
   const [prio, setPrio] = useState("all");
-  const extra = (id: string) => suggestions.filter((s) => s.theme === id && !s.id.startsWith("SUG-1")).length;
+  const extra = (id: string) => suggestions.filter((s) => s.theme === id && !SEED_IDS.has(s.id)).length;
   const list = THEMES.filter((t) => prio === "all" || t.priority === prio);
   return (
     <>

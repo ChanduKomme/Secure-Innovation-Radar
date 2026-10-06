@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as RadarRouteImport } from './routes/radar'
+import { Route as SimilarRouteImport } from './routes/similar'
+import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as TrustRouteImport } from './routes/trust'
+import { Route as ThemesIndexRouteImport } from './routes/themes.index'
+import { Route as ThemesThemeIdRouteImport } from './routes/themes.$themeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RadarRoute = RadarRouteImport.update({
+  id: '/radar',
+  path: '/radar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimilarRoute = SimilarRouteImport.update({
+  id: '/similar',
+  path: '/similar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesIndexRoute = ThemesIndexRouteImport.update({
+  id: '/themes/',
+  path: '/themes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThemesThemeIdRoute = ThemesThemeIdRouteImport.update({
+  id: '/themes/$themeId',
+  path: '/themes/$themeId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/radar': typeof RadarRoute
+  '/similar': typeof SimilarRoute
+  '/submit': typeof SubmitRoute
+  '/trust': typeof TrustRoute
+  '/themes/$themeId': typeof ThemesThemeIdRoute
+  '/themes/': typeof ThemesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/radar': typeof RadarRoute
+  '/similar': typeof SimilarRoute
+  '/submit': typeof SubmitRoute
+  '/trust': typeof TrustRoute
+  '/themes/$themeId': typeof ThemesThemeIdRoute
+  '/themes': typeof ThemesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/radar': typeof RadarRoute
+  '/similar': typeof SimilarRoute
+  '/submit': typeof SubmitRoute
+  '/trust': typeof TrustRoute
+  '/themes/$themeId': typeof ThemesThemeIdRoute
+  '/themes/': typeof ThemesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/radar'
+    | '/similar'
+    | '/submit'
+    | '/trust'
+    | '/themes/$themeId'
+    | '/themes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/radar'
+    | '/similar'
+    | '/submit'
+    | '/trust'
+    | '/themes/$themeId'
+    | '/themes'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/radar'
+    | '/similar'
+    | '/submit'
+    | '/trust'
+    | '/themes/$themeId'
+    | '/themes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  RadarRoute: typeof RadarRoute
+  SimilarRoute: typeof SimilarRoute
+  SubmitRoute: typeof SubmitRoute
+  TrustRoute: typeof TrustRoute
+  ThemesThemeIdRoute: typeof ThemesThemeIdRoute
+  ThemesIndexRoute: typeof ThemesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/radar': {
+      id: '/radar'
+      path: '/radar'
+      fullPath: '/radar'
+      preLoaderRoute: typeof RadarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/similar': {
+      id: '/similar'
+      path: '/similar'
+      fullPath: '/similar'
+      preLoaderRoute: typeof SimilarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/': {
+      id: '/themes/'
+      path: '/themes'
+      fullPath: '/themes/'
+      preLoaderRoute: typeof ThemesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/themes/$themeId': {
+      id: '/themes/$themeId'
+      path: '/themes/$themeId'
+      fullPath: '/themes/$themeId'
+      preLoaderRoute: typeof ThemesThemeIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  RadarRoute: RadarRoute,
+  SimilarRoute: SimilarRoute,
+  SubmitRoute: SubmitRoute,
+  TrustRoute: TrustRoute,
+  ThemesThemeIdRoute: ThemesThemeIdRoute,
+  ThemesIndexRoute: ThemesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
