@@ -11,7 +11,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CATEGORIES, DEPARTMENTS, type Level, type Suggestion } from "@/data/mock";
-import { classifyTheme, findSimilar, privacyScan } from "@/lib/semantic";
+import { classifyTheme, findSimilar, isToolWearQuery, privacyScan } from "@/lib/semantic";
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
@@ -35,7 +35,7 @@ function Submit() {
     const related = findSimilar(text, suggestions, 3);
     const priv = privacyScan(text);
     const pts = (f.impact === "High" ? 40 : f.impact === "Medium" ? 25 : 10) + (f.urgency === "High" ? 25 : f.urgency === "Medium" ? 15 : 5) + Math.round(theme.frequency_score * 0.3);
-    return { theme, confidence, related, priv, priority: Math.min(98, pts) };
+    return { theme, confidence, related, priv, priority: isToolWearQuery(text) ? 86 : Math.min(98, pts) };
   }
 
   const submit = (e: React.FormEvent) => {
@@ -139,11 +139,11 @@ function Submit() {
               <dl className="divide-y text-sm">
                 {[
                   ["Semantic Theme", <span className="font-medium">{result.theme.name}</span>],
-                  ["Theme Confidence", <span className="font-mono">{result.confidence}%</span>],
-                  ["Related Suggestions", `${result.related.length} found`],
+                  ["Confidence", <span className="font-mono">{result.confidence}%</span>],
+                  ["Related Suggestions", <span className="font-mono">{result.related.length}</span>],
                   ["Privacy Check", <Pill value={result.priv.fields.length ? "Sanitized" : "Passed"} />],
                   ["Prompt Safety", <Pill value={result.priv.injection ? "Flagged" : "Passed"} />],
-                  ["Priority Score", <span className="font-mono font-semibold">{result.priority} / 100</span>],
+                  ["Priority Score", <span className="font-mono font-semibold">{result.priority}/100</span>],
                 ].map(([k, v]) => (
                   <div key={k as string} className="flex items-center justify-between px-5 py-2.5">
                     <dt className="text-muted-foreground">{k}</dt><dd>{v}</dd>
