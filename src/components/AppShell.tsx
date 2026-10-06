@@ -6,6 +6,7 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger, SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { semanticApiConfigured } from "@/lib/semantic-api";
 
 const NAV = [
   { title: "Overview", url: "/", icon: LayoutGrid },
@@ -50,13 +51,15 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="px-3 pb-3 text-[11px] text-sidebar-foreground/60 group-data-[collapsible=icon]:hidden">
-        v0.4 · Independent Prototype
+        v0.5 · Independent Prototype
       </SidebarFooter>
     </Sidebar>
   );
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const liveConfigured = semanticApiConfigured();
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -70,8 +73,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <div className="ml-auto flex items-center gap-4">
               <span className="hidden items-center gap-1.5 text-xs text-muted-foreground md:flex">
-                <span className="size-1.5 rounded-full bg-warning" />
-                AI Engine: Demo Mode
+                <span className={`size-1.5 rounded-full ${liveConfigured ? "bg-success" : "bg-warning"}`} />
+                {liveConfigured ? "Semantic Engine: Configured" : "Semantic Engine: Demo Fallback"}
               </span>
               <Button size="sm" asChild>
                 <Link to="/submit"><Plus /><span className="hidden sm:inline">Submit Idea</span></Link>
@@ -82,7 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
           <main className="mx-auto w-full max-w-[1440px] flex-1 p-3 md:p-5">{children}</main>
-          <footer className="shrink-0 border-t bg-card px-3 py-2.5 text-xs text-muted-foreground md:px-5">
+          <footer className="shrink-0 border-t bg-card px-3 py-3 text-xs text-muted-foreground md:px-5">
             Independent prototype using synthetic data only. Not affiliated with or commissioned by GFE.
           </footer>
         </div>
