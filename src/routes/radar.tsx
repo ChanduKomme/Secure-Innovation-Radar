@@ -17,11 +17,11 @@ const COLOR = { High: "var(--chart-1)", Medium: "var(--chart-2)", Low: "var(--ch
 const axis = { fontSize: 11, fill: "var(--muted-foreground)" };
 const score = (t: Theme) => Math.round((t.impact_score * t.frequency_score) / 100);
 const QUADRANTS = [
-  { x: 97, y: 97, anchor: "end", text: "STRATEGIC PRIORITIES" },
-  { x: 3, y: 97, anchor: "start", text: "TARGETED HIGH IMPACT" },
-  { x: 97, y: 4, anchor: "end", text: "RECURRING · LOW IMPACT" },
-  { x: 3, y: 4, anchor: "start", text: "ISOLATED SIGNALS" },
-] as const;
+  { cls: "right-1.5 top-[calc(50%-1rem)] text-primary", text: "Strategic priorities" },
+  { cls: "left-1.5 top-1", text: "Targeted high impact" },
+  { cls: "right-1.5 bottom-1", text: "Recurring · low impact" },
+  { cls: "left-1.5 bottom-1", text: "Isolated signals" },
+];
 
 function Tip({ active, payload }: { active?: boolean; payload?: { payload: Theme }[] }) {
   if (!active || !payload?.length) return null;
@@ -71,17 +71,18 @@ function RadarPage() {
       <div className="grid gap-3 xl:grid-cols-4">
         <Section title="Opportunity map" description="Frequency × impact · bubble size = related suggestions · click a bubble to inspect" className="xl:col-span-3"
           actions={<div className="flex gap-3 text-[11px] text-muted-foreground">{Object.entries(COLOR).map(([k, c]) => <span key={k} className="flex items-center gap-1"><span className="size-2 rounded-full" style={{ background: c }} />{k}</span>)}</div>}>
-          <div className="h-[380px] md:h-[480px]">
+          <div className="relative h-[380px] md:h-[480px]">
+            <div className="pointer-events-none absolute bottom-[54px] left-[60px] right-[20px] top-[28px] z-10">
+              {QUADRANTS.map((q) => (
+                <span key={q.text} className={`absolute rounded-sm bg-card/80 px-1 text-[10px] font-semibold uppercase tracking-wider ${q.cls.includes("text-primary") ? "" : "text-muted-foreground"} ${q.cls}`}>{q.text}</span>
+              ))}
+            </div>
             <ResponsiveContainer>
               <ScatterChart margin={{ top: 28, right: 20, bottom: 24, left: 0 }}>
                 <ReferenceArea x1={50} x2={100} y1={50} y2={100} fill="var(--primary)" fillOpacity={0.06} />
                 <CartesianGrid stroke="var(--border)" strokeDasharray="2 3" />
                 <ReferenceLine x={50} stroke="var(--muted-foreground)" strokeOpacity={0.4} />
                 <ReferenceLine y={50} stroke="var(--muted-foreground)" strokeOpacity={0.4} />
-                {QUADRANTS.map((q) => (
-                  <ReferenceLine key={q.text} segment={[{ x: q.x, y: q.y }, { x: q.x, y: q.y }]} stroke="none"
-                    label={{ value: q.text, position: "center", fontSize: 10, letterSpacing: 1, fontWeight: 600, textAnchor: q.anchor, fill: q.text.startsWith("STRATEGIC") ? "var(--primary)" : "var(--muted-foreground)" }} />
-                ))}
                 <XAxis type="number" dataKey="frequency_score" domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={axis} label={{ value: "Frequency of Employee Reports →", position: "insideBottom", offset: -14, fontSize: 11, fill: "var(--muted-foreground)" }} />
                 <YAxis type="number" dataKey="impact_score" domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tick={axis} label={{ value: "Estimated Business Impact →", angle: -90, position: "insideLeft", offset: 16, fontSize: 11, fill: "var(--muted-foreground)" }} />
                 <ZAxis type="number" dataKey="suggestion_count" range={[260, 2400]} />
