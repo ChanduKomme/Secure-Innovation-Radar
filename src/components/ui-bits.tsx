@@ -21,9 +21,9 @@ const tone = {
 
 export function Pill({ value, className }: { value: string; className?: string }) {
   const { t } = useLanguage();
-  const t = (tone as Record<string, string>)[value] ?? "bg-secondary text-secondary-foreground";
+  const toneClass = (tone as Record<string, string>)[value] ?? "bg-secondary text-secondary-foreground";
   return (
-    <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-sm border border-current/15 px-1.5 text-[11px] font-medium leading-none", t, className)}>
+    <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-sm border border-current/15 px-1.5 text-[11px] font-medium leading-none", toneClass, className)}>
       {t(value)}
     </span>
   );
