@@ -579,11 +579,14 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>("en");
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     const saved = window.localStorage.getItem("sir-language");
     if (saved === "de") setLanguageState("de");
+    setReady(true);
   }, []);
   useEffect(() => {
+    if (!ready) return;
     window.localStorage.setItem("sir-language", language);
     translateDocument(language);
     let queued = false;
@@ -594,7 +597,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     });
     observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     return () => observer.disconnect();
-  }, [language]);
+  }, [language, ready]);
   const value = useMemo(() => ({ language, setLanguage: setLanguageState, t: (text: string) => translatePhrase(text, language) }), [language]);
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
