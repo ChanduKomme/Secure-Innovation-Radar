@@ -3,6 +3,13 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 export type Language = "en" | "de";
 
 const DE: Record<string, string> = {
+  "v0.6 · Independent Prototype": "v0.6 · Unabhängiger Prototyp",
+  "Toggle Sidebar": "Seitenleiste ein-/ausblenden",
+  "Impact": "Wirkung",
+  "Urgency": "Dringlichkeit",
+  "Live semantic engine": "Live-Semantik-Engine",
+  "Live cosine similarity between normalized multilingual sentence embeddings.": "Live-Kosinusähnlichkeit zwischen normalisierten mehrsprachigen Satzrepräsentationen.",
+  "The real model could not load, so the deterministic demo fallback is active.": "Das reale Modell konnte nicht geladen werden; der deterministische Demo-Rückfallmodus ist aktiv.",
   "Computer-vision and data-driven detection and classification of recurring quality defects.": "Computer-Vision- und datenbasierte Erkennung und Klassifikation wiederkehrender Qualitätsfehler.",
   "Employees report that visual inspection is manual, inconsistent across shifts, and that recurring defect types are not systematically linked to process parameters. Suggestions converge on camera-based defect detection and automatic defect classification.": "Mitarbeitende berichten, dass die Sichtprüfung manuell erfolgt, zwischen Schichten uneinheitlich ist und wiederkehrende Fehlerarten nicht systematisch mit Prozessparametern verknüpft werden. Die Vorschläge zielen auf kamerabasierte Fehlererkennung und automatische Fehlerklassifikation.",
   "Assess a camera-based inspection pilot on one line with a labelled defect sample set.": "Einen Pilotversuch zur kamerabasierten Prüfung an einer Linie mit gelabeltem Fehlermustersatz bewerten.",
