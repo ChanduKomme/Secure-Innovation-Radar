@@ -449,7 +449,8 @@ function translateDocument(language: Language) {
     if (!current.trim()) continue;
     if (!originals.has(node)) originals.set(node, reverse.get(current.trim()) ?? current.trim());
     const original = originals.get(node) ?? current.trim();
-    node.textContent = preserveWhitespace(current, translatePhrase(original, language));
+    const next = preserveWhitespace(current, translatePhrase(original, language));
+    if (current !== next) node.textContent = next;
   }
   for (const element of document.body.querySelectorAll("*")) {
     if (element.closest("[data-no-translate]")) continue;
@@ -459,7 +460,8 @@ function translateDocument(language: Language) {
       const current = element.getAttribute(attr);
       if (!current) continue;
       if (!stored.has(attr)) stored.set(attr, reverse.get(current) ?? current);
-      element.setAttribute(attr, translatePhrase(stored.get(attr) ?? current, language));
+      const next = translatePhrase(stored.get(attr) ?? current, language);
+      if (current !== next) element.setAttribute(attr, next);
     }
     if (element instanceof HTMLTextAreaElement || element instanceof HTMLInputElement) {
       const current = element.value;

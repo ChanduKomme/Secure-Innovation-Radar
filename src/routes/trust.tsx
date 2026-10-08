@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, EyeOff, FileSearch, Lock, ScrollText, ShieldAlert, UserCheck, Scale, KeyRound, Server, Users, Lightbulb, ClipboardList } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -64,7 +64,7 @@ function Trust() {
     setInj((value) => value === enInj || value === deInj ? (next === "de" ? deInj : enInj) : value);
   };
 
-  useMemo(() => switchExampleLanguage(language), [language]);
+  useEffect(() => switchExampleLanguage(language), [language]);
 
   return (
     <>
