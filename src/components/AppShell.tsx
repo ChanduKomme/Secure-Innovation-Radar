@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { semanticEngineMode } from "@/lib/semantic-api";
+import { useLanguage } from "@/lib/i18n";
 
 const NAV = [
   { title: "Overview", url: "/", icon: LayoutGrid },
@@ -59,6 +60,7 @@ function AppSidebar() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const mode = semanticEngineMode();
+  const { language, setLanguage } = useLanguage();
 
   return (
     <SidebarProvider>
@@ -76,6 +78,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <span className="size-1.5 rounded-full bg-success" />
                 {mode === "remote" ? "Semantic Engine: Live API" : "Semantic Engine: Live Browser"}
               </span>
+              <div className="flex h-7 items-center rounded-md border bg-background p-0.5" role="group" aria-label="Language / Sprache" data-no-translate>
+                {(["en", "de"] as const).map((value) => (
+                  <Button
+                    key={value}
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    aria-pressed={language === value}
+                    aria-label={value === "en" ? "Switch to English" : "Auf Deutsch umstellen"}
+                    className={`h-6 min-w-7 px-1.5 text-[10px] font-semibold ${language === value ? "bg-primary-soft text-primary" : "text-muted-foreground"}`}
+                    onClick={() => setLanguage(value)}
+                  >
+                    {value.toUpperCase()}
+                  </Button>
+                ))}
+              </div>
               <Button size="sm" asChild>
                 <Link to="/submit"><Plus /><span className="hidden sm:inline">Submit Idea</span></Link>
               </Button>

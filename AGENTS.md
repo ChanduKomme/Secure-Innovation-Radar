@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep canonical domain data in English and localize only at the presentation boundary so semantic matching, filters, and persisted records remain stable across languages.

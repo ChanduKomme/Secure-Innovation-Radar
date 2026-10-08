@@ -16,6 +16,7 @@ import { analyzeSemantic, semanticEngineMode, type LiveRelatedResult } from "@/l
 import { useStore } from "@/lib/store";
 import { PageHeader, Pill } from "@/components/ui-bits";
 import { meta } from "@/lib/meta";
+import { useLanguage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/submit")({
   head: () => meta("Submit Idea", "Submit an improvement idea and run privacy-aware semantic analysis."),
@@ -39,6 +40,7 @@ function wait(ms: number) {
 }
 
 function Submit() {
+  const { t } = useLanguage();
   const { suggestions, add } = useStore();
   const [f, setF] = useState({ title: "", description: "", department: "Production", category: "Improvement Idea", impact: "Medium" as Level, urgency: "Medium" as Level, anonymous: true, ack: false });
   const [step, setStep] = useState(-1);
@@ -148,7 +150,7 @@ function Submit() {
             </div>
             {(["impact", "urgency"] as const).map((k) => (
               <div key={k} className="space-y-1.5">
-                <Label className="capitalize">{k}</Label>
+                <Label>{t(k === "impact" ? "Impact" : "Urgency")}</Label>
                 <ToggleGroup type="single" variant="outline" value={f[k]} onValueChange={(v) => v && setF({ ...f, [k]: v as Level })} className="w-full">
                   {["Low", "Medium", "High"].map((l) => <ToggleGroupItem key={l} value={l} className="flex-1 text-xs data-[state=on]:bg-primary-soft data-[state=on]:text-primary">{l}</ToggleGroupItem>)}
                 </ToggleGroup>

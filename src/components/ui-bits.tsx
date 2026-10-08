@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import * as Icons from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 
 const tone = {
   High: "bg-destructive-soft text-destructive",
@@ -19,10 +20,11 @@ const tone = {
 } as const;
 
 export function Pill({ value, className }: { value: string; className?: string }) {
-  const t = (tone as Record<string, string>)[value] ?? "bg-secondary text-secondary-foreground";
+  const { t } = useLanguage();
+  const toneClass = (tone as Record<string, string>)[value] ?? "bg-secondary text-secondary-foreground";
   return (
-    <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-sm border border-current/15 px-1.5 text-[11px] font-medium leading-none", t, className)}>
-      {value}
+    <span className={cn("inline-flex h-5 items-center whitespace-nowrap rounded-sm border border-current/15 px-1.5 text-[11px] font-medium leading-none", toneClass, className)}>
+      {t(value)}
     </span>
   );
 }
