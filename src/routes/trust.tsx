@@ -162,8 +162,8 @@ function Trust() {
           <Table>
             <TableHeader><TableRow><TableHead className="pl-4">Timestamp</TableHead><TableHead>Event</TableHead><TableHead>Control</TableHead><TableHead>Subject</TableHead><TableHead className="pr-4">Result</TableHead></TableRow></TableHeader>
             <TableBody>
-              {LOG.map((l) => (
-                <TableRow key={l[0]} className="font-mono text-xs">
+              {LOG.map((l, index) => (
+                <TableRow key={`${l[0]}-${l[1]}-${index}`} className="font-mono text-xs">
                   <TableCell className="whitespace-nowrap pl-4 text-muted-foreground">{l[0]}</TableCell>
                   <TableCell className="whitespace-nowrap">{l[1]}</TableCell>
                   <TableCell className="text-muted-foreground">{l[2]}</TableCell>
