@@ -8,7 +8,12 @@ let extractorPromise: Promise<FeatureExtractionPipeline> | null = null;
 
 function getExtractor() {
   if (!extractorPromise) {
-    extractorPromise = pipeline("feature-extraction", MODEL, { dtype: "q8" }) as Promise<FeatureExtractionPipeline>;
+    const createPipeline = pipeline as unknown as (
+      task: "feature-extraction",
+      model: string,
+      options: { dtype: "q8" },
+    ) => Promise<FeatureExtractionPipeline>;
+    extractorPromise = createPipeline("feature-extraction", MODEL, { dtype: "q8" });
   }
   return extractorPromise;
 }

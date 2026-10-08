@@ -79,8 +79,8 @@ export function classifyTheme(text: string): { theme: Theme; confidence: number 
 }
 
 const EMAIL = /[\w.+-]+@[\w-]+\.[\w.]+/g;
-const NAME_CTX = /\b(contact|ask|call|email|tell|from|by)\s+([A-Z][a-z]+)\b/g;
-const INJECTION = /(ignore (all )?(previous|prior) instructions|reveal|system prompt|disregard|act as|jailbreak)/i;
+const NAME_CTX = /\b(contact|ask|call|email|tell|from|by|kontaktieren(?:\s+Sie)?|fragen(?:\s+Sie)?|rufen(?:\s+Sie)?)\s+([A-ZÄÖÜ][a-zäöüß]+)\b/g;
+const INJECTION = /(ignore (all )?(previous|prior) instructions|reveal|system prompt|disregard|act as|jailbreak|ignoriere (alle )?(vorherigen|früheren) anweisungen|lege .* offen|systemanweisung)/i;
 
 export function privacyScan(text: string) {
   const fields: { type: string; value: string }[] = [];

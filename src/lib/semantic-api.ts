@@ -23,7 +23,7 @@ interface ApiAnalyzeResponse {
   related: { suggestion_id: string; score: number }[];
 }
 
-const baseUrl = (import.meta.env.VITE_SEMANTIC_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
+const baseUrl = (import.meta.env["VITE_SEMANTIC_API_URL"] as string | undefined)?.replace(/\/$/, "") ?? "";
 
 export function semanticApiConfigured() {
   return Boolean(baseUrl);
