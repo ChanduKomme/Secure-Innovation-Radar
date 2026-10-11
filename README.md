@@ -16,7 +16,7 @@ The interface was prototyped with Lovable, while the semantic layer uses a real 
 - Privacy screening and basic prompt-injection detection
 - Real multilingual sentence embeddings
 - Cosine-similarity search for related suggestions
-- Similarity-weighted recurring-theme assignment
+- Similarity-weighted recurring-theme assignment  
 - English/German semantic matching
 - AI theme intelligence and improvement hypotheses
 - Innovation radar for frequency vs. estimated business impact
