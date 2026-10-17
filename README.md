@@ -178,4 +178,4 @@ Browser semantic engine: Transformers.js, ONNX, multilingual MiniLM embeddings
 
 Optional backend: Python, FastAPI, SentenceTransformers, NumPy
 
-UI prototyping: Lovable
+
